@@ -10,9 +10,9 @@
 
 <a id="deutsch"></a>
 
-# BEITRÄGE ZU TIMETRACKER PRO
+# BEITRÄGE ZU Time.Tracker.SingleFile
 
-Danke, dass du TimeTracker PRO unterstützen möchtest! 🙏
+Danke, dass du Time.Tracker.SingleFile unterstützen möchtest! 🙏
 
 Dieses Dokument erklärt wie du effektiv einen Beitrag leisten kannst — ob Bug-Fix, Feature, Dokumentation oder Test.
 
@@ -43,7 +43,7 @@ Wir nutzen den **Contributor Covenant** (siehe `CODE_OF_CONDUCT.md`). Kurz:
 ✗ Keine Belästigung, Mobbing oder Diskriminierung
 ```
 
-Verstöße melden an: `support@timetracker-pro.local` (oder GitHub Issues mit 🚨 Flag).
+Verstöße melden an: `support@Time.Tracker.SingleFile.XXX` (oder GitHub Issues mit 🚨 Flag).
 
 ---
 
@@ -131,11 +131,11 @@ Schritte:
 ```bash
 # 1. Fork on GitHub UI
 # 2. Lokal klonen
-git clone https://github.com/YOUR_USERNAME/timetracker-pro.git
-cd timetracker-pro
+git clone https://github.com/YOUR_USERNAME/Time.Tracker.SingleFile.git
+cd Time.Tracker.SingleFile
 
 # 3. Upstream hinzufügen (für Sync)
-git remote add upstream https://github.com/original/timetracker-pro.git
+git remote add upstream https://github.com/original/Time.Tracker.SingleFile.git
 ```
 
 ### Schritt 2: Feature-Branch erstellen
@@ -481,16 +481,16 @@ Wenn du ein Issue öffnest, bitte folgende Info-Box ausfüllen:
 
 - GitHub Issues: Bugs, Features, Diskussionen
 - Discussions Tab: Allgemeine Fragen
-- Email: support@timetracker-pro.local (für sensible Themen)
+- Email: support@Time.Tracker.SingleFile.XXX (für sensible Themen)
 - Security Vulns: Siehe `SECURITY.md`
 
 ---
 
 <a id="english"></a>
 
-# CONTRIBUTING TO TIMETRACKER PRO
+# CONTRIBUTING TO Time.Tracker.SingleFile
 
-Thank you for wanting to support TimeTracker PRO! 🙏
+Thank you for wanting to support Time.Tracker.SingleFile! 🙏
 
 This document explains how to make effective contributions — whether bug fixes, features, documentation, or tests.
 
@@ -523,7 +523,7 @@ We use the **Contributor Covenant** (see `CODE_OF_CONDUCT.md`). In short:
 ✗ No harassment, bullying, or discrimination
 ```
 
-Report violations to: `support@timetracker-pro.local` (or GitHub Issues with 🚨 flag).
+Report violations to: `support@Time.Tracker.SingleFile.XXX` (or GitHub Issues with 🚨 flag).
 
 ---
 
@@ -615,11 +615,11 @@ Steps:
 ```bash
 # 1. Fork on GitHub UI
 # 2. Clone locally
-git clone https://github.com/YOUR_USERNAME/timetracker-pro.git
-cd timetracker-pro
+git clone https://github.com/YOUR_USERNAME/Time.Tracker.SingleFile.git
+cd Time.Tracker.SingleFile
 
 # 3. Add upstream (for sync)
-git remote add upstream https://github.com/original/timetracker-pro.git
+git remote add upstream https://github.com/original/Time.Tracker.SingleFile.git
 ```
 
 ### Step 2: Create Feature Branch
@@ -977,14 +977,14 @@ When opening an issue, please fill out this info box:
 
 - GitHub Issues: Bugs, features, discussions
 - Discussions Tab: General questions
-- Email: support@timetracker-pro.local (for sensitive topics)
+- Email: support@Time.Tracker.SingleFile.XXX (for sensitive topics)
 - Security Vulns: See `SECURITY.md`
 
 ---
 
 <div align="center">
 
-**Thank you for contributing to TimeTracker PRO!**
+**Thank you for contributing to Time.Tracker.SingleFile!**
 
 *Together we build a better time tracking experience.*
 
