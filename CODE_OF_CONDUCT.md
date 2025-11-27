@@ -10,7 +10,7 @@
 
 <a id="deutsch"></a>
 
-# VERHALTENSCODEX FÜR TIMETRACKER PRO
+# VERHALTENSCODEX FÜR Time.Tracker.SingleFile
 
 ## Unser Versprechen
 
@@ -71,7 +71,7 @@ Wenn du Missbrauch, Belästigung oder andere Verstöße gegen diesen Verhaltensc
 beobachtest, melde es bitte:
 
 ```
-📧 Email:    support@timetracker-pro.local
+📧 Email:    support@Time.Tracker.SingleFile.XXX  | X
 🐛 Issues:   GitHub Issues mit Label "Code-of-Conduct-Violation"
 💬 Direct:   Private Nachricht an einen Maintainer
 ```
@@ -93,7 +93,7 @@ verfügbar unter https://www.contributor-covenant.org/version/1/4/code-of-conduc
 
 <a id="english"></a>
 
-# CODE OF CONDUCT FOR TIMETRACKER PRO
+# CODE OF CONDUCT FOR Time.Tracker.SingleFile
 
 ## Our Pledge
 
@@ -153,7 +153,7 @@ If you witness abuse, harassment, or other violations of this Code of Conduct,
 please report it:
 
 ```
-📧 Email:    support@timetracker-pro.local
+📧 Email:    support@Time.Tracker.SingleFile | X
 🐛 Issues:   GitHub Issues with label "Code-of-Conduct-Violation"
 💬 Direct:   Private message to a Maintainer
 ```
