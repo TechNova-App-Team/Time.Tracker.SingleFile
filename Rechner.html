@@ -215,7 +215,8 @@
         /* --- MODAL --- */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
         .modal.active { display: flex; animation: fadeIn 0.2s ease; }
-        .modal-box { background: #121215; border: 1px solid var(--border); width: 480px; padding: 2.5rem; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        /* Modal Box für Einstellungen ist breiter für das Urlaubs-Dashboard */
+        .modal-box { background: #121215; border: 1px solid var(--border); width: 680px; padding: 2.5rem; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
         
         .color-dot { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.1); transition: 0.2s; }
         .color-dot.active { border-color: #fff; transform: scale(1.1); }
@@ -252,7 +253,7 @@
             grid-template-rows: repeat(10, 1fr);
             gap: 10px;
             height: 100%;
-            padding: 0 10px 30px; /* Space for labels */
+            padding: 0 10px 30px; 
             align-items: flex-end;
         }
         .bar-col {
@@ -281,7 +282,7 @@
             white-space: nowrap;
         }
         
-        /* --- NEW AUDIT GRID STYLES --- */
+        /* --- AUDIT GRID STYLES --- */
         .audit-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -309,7 +310,50 @@
         .audit-card.warn { border-left-color: var(--audit-warn); }
         .audit-card.danger { border-left-color: var(--danger); }
         .audit-card.success { border-left-color: var(--audit-ok); }
+        
+        /* --- SETTINGS/VACATION DASHBOARD --- */
+        .vacation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .vacation-block-tool {
+            background: rgba(255,255,255,0.05);
+            padding: 1.25rem;
+            border-radius: 12px;
+        }
 
+        /* --- NEW TIMER LOG/VISUALS --- */
+        .timer-log {
+            width: 100%;
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+        .timer-log-bar {
+            height: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        .timer-log-segment {
+            height: 100%;
+            position: absolute;
+            top: 0;
+            border-left: 1px solid rgba(0,0,0,0.5);
+        }
+        .timer-log-status {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .timer-log-status.running { color: var(--success); }
+        .timer-log-status.paused { color: var(--audit-warn); }
+        .timer-log-status.max { color: var(--danger); }
 
     </style>
 </head>
@@ -391,9 +435,9 @@
                     <div style="margin-top:auto; width:100%;">
                         <div class="ring-lbl" style="margin-bottom:5px; display:flex; justify-content:space-between;">
                             <span>Urlaubstage</span>
-                            <span>0 / 30</span>
+                            <span id="valVacationUsed">0 / 30</span>
                         </div>
-                        <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px;"><div style="width:0%; background:var(--success); height:100%;"></div></div>
+                        <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px;"><div id="vacationProgressBar" style="width:0%; background:var(--success); height:100%;"></div></div>
                     </div>
                 </div>
             </div>
@@ -475,6 +519,12 @@
                 <div class="timer-box" id="timerBox">
                     <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Live Tracker</span>
                     <div class="timer-display" id="timerDisplay">00:00:00</div>
+                    
+                    <div class="timer-log">
+                        <div class="timer-log-status" id="timerStatus">STOP</div>
+                        <div class="timer-log-bar" id="timerLogBar">
+                            </div>
+                    </div>
                     
                     <div class="btn-icon-row">
                         <button class="btn btn-ghost" onclick="timerAction('start')" style="color:var(--success)">▶ Start</button>
@@ -558,7 +608,7 @@
                 <button onclick="closeSettings()" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
             </div>
             
-            <h4 style="color:var(--text-muted); margin-bottom:10px; font-size:0.8rem;">PROFIL</h4>
+            <h4 style="color:var(--text-muted); margin-bottom:10px; font-size:0.8rem;">PROFIL & Design</h4>
             <input type="text" id="confName" class="glass-input" style="margin-bottom:1.5rem;" placeholder="Dein Name">
 
             <h4 style="color:var(--text-muted); margin-bottom:10px; font-size:0.8rem;">DESIGN ACCENT</h4>
@@ -571,10 +621,10 @@
                 <div class="color-dot" style="background:#ec4899" onclick="setTheme('#ec4899')"></div>
             </div>
 
-            <h4 style="color:var(--text-muted); margin-bottom:10px; font-size:0.8rem;">AUTO-PAUSE REGEL</h4>
+            <h4 style="color:var(--text-muted); margin-bottom:10px; font-size:0.8rem;">ARBEITSZEITEN & PAUSE</h4>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:1.5rem;">
                 <div>
-                    <label style="font-size:0.7rem; color:#666; display:block; margin-bottom:5px;">Ab Stunden:</label>
+                    <label style="font-size:0.7rem; color:#666; display:block; margin-bottom:5px;">Ab Stunden (Pause):</label>
                     <input type="number" id="confBreakThresh" class="glass-input" value="6">
                 </div>
                 <div>
@@ -592,7 +642,40 @@
                 <input type="number" id="h5" class="glass-input" style="padding:10px; text-align:center;">
             </div>
 
-            <button class="btn btn-primary" onclick="saveSettings()">Einstellungen speichern</button>
+            <h4 style="color:var(--text-muted); margin-bottom:10px; font-size:0.8rem;">URLAUBSVERWALTUNG</h4>
+            <div style="display:flex; gap:15px; margin-bottom:1.5rem;">
+                <div style="flex:1;">
+                    <label style="font-size:0.7rem; color:#666; display:block; margin-bottom:5px;">Jahresanspruch (Tage):</label>
+                    <input type="number" id="confVacationTotal" class="glass-input" value="30">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:0.7rem; color:#666; display:block; margin-bottom:5px;">Schon genommene Tage:</label>
+                    <input type="number" id="confVacationUsedManual" class="glass-input" value="0">
+                </div>
+            </div>
+
+            <div class="vacation-grid">
+                <div style="text-align:center; padding:10px 0;">
+                    <div style="font-size:3rem; font-weight:800; color:var(--success);" id="vacationRemaining">0</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">Verfügbar (Tage)</div>
+                </div>
+
+                <div class="vacation-block-tool">
+                    <h5 style="margin-bottom:10px;">Blockbuchung (Urlaub/Feiertag)</h5>
+                    <select id="periodType" class="glass-select" style="margin-bottom:10px;">
+                        <option value="vacation">🌴 Urlaub</option>
+                        <option value="holiday">🏖️ Firmen-Frei/Feiertag</option>
+                    </select>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="date" id="periodStart" class="glass-input" placeholder="Startdatum">
+                        <input type="date" id="periodEnd" class="glass-input" placeholder="Enddatum">
+                    </div>
+                    <button class="btn btn-primary" onclick="bookPeriod()">Tage buchen & überschreiben</button>
+                </div>
+            </div>
+
+
+            <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:2rem;">Einstellungen speichern</button>
         </div>
     </div>
 
@@ -609,36 +692,39 @@
 
 <script>
     // --- STATE & CONFIG ---
-    let data = { entries: [], settings: { name:'User', theme:'#a855f7', hours:[0,8.75,8.75,8.75,8.75,4.5,0], break:{thresh:6, min:30} } };
-    let timer = { id:null, start:0, paused:0, running:false };
+    let data = { entries: [], settings: { name:'User', theme:'#a855f7', hours:[0,8.75,8.75,8.75,8.75,4.5,0], break:{thresh:6, min:30}, vacation:{total:30, used:0, usedManual:0} } };
+    let timer = { id:null, start:0, paused:0, running:false, log:[] }; // Hinzugefügt: log
     let editId = null;
 
     // --- INIT ---
     window.onload = () => {
         if(localStorage.getItem('tg_pro_data')) data = JSON.parse(localStorage.getItem('tg_pro_data'));
         
-        // Ensure settings object structure exists if loaded from old version
         if(!data.settings.break) data.settings.break = {thresh:6, min:30};
+        if(!data.settings.vacation) data.settings.vacation = {total:30, used:0, usedManual:0};
         
         applyTheme(data.settings.theme);
         updateUI();
         
-        // NEW: Check and book holidays (async to prevent blocking main UI)
         setTimeout(checkAndBookHolidays, 500);
 
-        // Timer Check
+        // Timer Check und Log laden
         const savedTimer = localStorage.getItem('tg_timer');
         if(savedTimer) {
             const t = JSON.parse(savedTimer);
-            if(t.running) {
-                timer.start = t.start; timer.paused = t.paused; timer.running = true;
+            Object.assign(timer, t); // State wiederherstellen
+            
+            if (timer.running) {
                 timerRun();
                 document.getElementById('timerBox').classList.add('timer-active');
-            } else if (t.paused > 0) {
-                timer.paused = t.paused;
-                displayTimerTime(t.paused);
+            } else if (timer.paused > 0) {
+                displayTimerTime(timer.paused);
             }
         }
+        
+        const savedLog = localStorage.getItem('tg_timer_log');
+        if (savedLog) timer.log = JSON.parse(savedLog);
+        renderTimerLogBar(); // Timer Log Leiste initialisieren
 
         setInterval(() => {
             const now = new Date();
@@ -649,11 +735,15 @@
 
     function save() { 
         localStorage.setItem('tg_pro_data', JSON.stringify(data)); 
-        // Log last save time
         localStorage.setItem('tg_last_save', Date.now()); 
         updateUI(); 
     }
-    function saveTimerState() { localStorage.setItem('tg_timer', JSON.stringify(timer)); }
+    function saveTimerState() { 
+        localStorage.setItem('tg_timer', JSON.stringify({
+            id: timer.id, start: timer.start, paused: timer.paused, running: timer.running
+        })); 
+        localStorage.setItem('tg_timer_log', JSON.stringify(timer.log));
+    }
 
     // --- TAB LOGIC ---
     function switchTab(tabId) {
@@ -673,7 +763,7 @@
         }
     }
 
-    // --- LOGIC ---
+    // --- LOGIC (handleEntry remains unchanged for core functionality) ---
     function handleEntry() {
         const dateStr = document.getElementById('inpDate').value;
         const type = document.getElementById('inpType').value;
@@ -701,7 +791,6 @@
                 let hoursDiff = (d2 - d1) / 3.6e6;
                 if(hoursDiff < 0) hoursDiff += 24;
                 
-                // Auto Break Logic
                 if(data.settings.break.thresh > 0 && hoursDiff >= data.settings.break.thresh) {
                     breakMinutes = data.settings.break.min;
                     hoursDiff -= (breakMinutes / 60);
@@ -711,12 +800,11 @@
                 }
                 worked = hoursDiff;
                 
-                // Protocolling: Calculate End of Shift & Warning
                 const endTime = d2.getTime();
                 const endOfShift = new Date(endTime);
                 endOfShift.setMinutes(endOfShift.getMinutes() + breakMinutes);
                 shiftEnd = endOfShift.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
-                shiftWarning = worked > 10.0; // Arbeitszeitgesetz Check (>10h)
+                shiftWarning = worked > 10.0;
 
             } else if (direct) {
                 worked = parseFloat(direct);
@@ -728,10 +816,10 @@
         } else if (type === 'school') { 
             const SCHOOL_HOURS = 6.75;
             
-            if (dayIndex === 3) { // Mittwoch
+            if (dayIndex === 3) {
                 worked = SCHOOL_HOURS;
                 info = `Berufsschule - Mittwoch (${SCHOOL_HOURS.toFixed(2)}h)`;
-            } else if (dayIndex === 4 && isOddWeek(date)) { // Donnerstag in UNGERADER Woche
+            } else if (dayIndex === 4 && isOddWeek(date)) {
                 worked = SCHOOL_HOURS;
                 info = `Berufsschule - Do. (Ungerade Woche, ${SCHOOL_HOURS.toFixed(2)}h)`;
             } else if (direct) {
@@ -742,7 +830,6 @@
                 info = 'Keine Berufsschule (Regulär)';
             }
             
-            // Schulzeit zählt als Soll-Zeit erfüllt, kein Minus im Saldo.
             if (worked > 0 && (dayIndex === 3 || (dayIndex === 4 && isOddWeek(date)) || direct)) {
                  diff = 0; 
             } else {
@@ -767,10 +854,15 @@
 
         if(editId) {
             const idx = data.entries.findIndex(e => e.id === editId);
-            if(idx > -1) data.entries[idx] = entry;
+            if(idx > -1) {
+                const oldType = data.entries[idx].type;
+                data.entries[idx] = entry;
+                if (oldType !== 'vacation' || type !== 'vacation') recalculateVacationUsed();
+            }
             resetEdit();
         } else {
             data.entries.push(entry);
+            if (type === 'vacation') recalculateVacationUsed();
         }
         
         data.entries.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -781,7 +873,281 @@
         document.getElementById('inpHours').value = '';
     }
     
-    // --- FEIERTAG LOGIC ---
+    // --- TIMER LOGIC (NEW & HEAVILY MODIFIED) ---
+    
+    function logTimerAction(action, time = Date.now()) {
+        const lastAction = timer.log.at(-1);
+        
+        // Timer Log auf denselben Tag beschränken
+        const today = new Date().toISOString().split('T')[0];
+        if (lastAction && lastAction.date !== today) {
+            timer.log = []; // Log leeren bei neuem Tag
+        }
+
+        // Timer Log Status setzen (Start/Pause/Stop)
+        if (action === 'start') {
+            // Wenn der Timer schon läuft, ist es kein neuer Start, nur ein Reset des Log-Zeitpunkts
+            if (timer.running && lastAction && lastAction.action === 'start') return;
+            timer.log.push({ action: 'start', time, date: today });
+        } else if (action === 'pause') {
+            timer.log.push({ action: 'pause', time, duration: time - (lastAction?.time || time), date: today });
+        } else if (action === 'stop') {
+            timer.log.push({ action: 'stop', time, date: today });
+            timer.log = []; // Log leeren nach finalem Stop/Buchung
+        }
+        
+        saveTimerState();
+        renderTimerLogBar();
+    }
+    
+    function timerAction(act) {
+        const now = Date.now();
+        if (act === 'start') {
+            if (!timer.running) { 
+                timer.start = now; 
+                timer.running = true; 
+                timerRun(); 
+                document.getElementById('timerBox').classList.add('timer-active');
+                logTimerAction('start', now);
+            }
+        } else if (act === 'pause') {
+            if (timer.running) {
+                timer.running = false; 
+                timer.paused += now - timer.start;
+                document.getElementById('timerBox').classList.remove('timer-active');
+                logTimerAction('pause', now);
+            }
+        } else if (act === 'stop') {
+            timer.running = false; 
+            document.getElementById('timerBox').classList.remove('timer-active');
+            let total = timer.paused + (timer.start > 0 ? now - timer.start : 0);
+            let h = total / 3.6e6;
+
+            if (confirm(`Zeit stoppen: ${h.toFixed(2)}h?`)) {
+                document.getElementById('inpHours').value = h.toFixed(2);
+                document.getElementById('inpType').value = 'work';
+                document.getElementById('inpDate').valueAsDate = new Date();
+                handleEntry(); // Buchung
+                
+                logTimerAction('stop', now); // Loggen und Log leeren
+                timer = {id:null, start:0, paused:0, running:false, log:[]};
+                displayTimerTime(0);
+                saveTimerState(); // Speichert leeren Timer-State
+            }
+        }
+        saveTimerState();
+    }
+    
+    function timerRun() {
+        if (!timer.running) return;
+        requestAnimationFrame(timerRun);
+        
+        const now = Date.now();
+        const rawRunningTimeMs = now - timer.start;
+        const totalWorkedMs = rawRunningTimeMs + timer.paused;
+        
+        const totalWorkedHours = totalWorkedMs / 3.6e6;
+        const breakThresholdHours = data.settings.break.thresh;
+        const breakMinutes = data.settings.break.min;
+        
+        let adjustedTimeMs = totalWorkedMs;
+        
+        // NEUE Logik: Automatische Pause nach Schwellenwert
+        if (totalWorkedHours >= breakThresholdHours && !timer.autoPaused) {
+            
+            // Fiktive Pause, wenn Schwelle überschritten, aber nicht manuell pausiert
+            if (breakMinutes > 0) {
+                 const breakMs = breakMinutes * 60000;
+                 adjustedTimeMs = totalWorkedMs - breakMs;
+                 
+                 // Interne Markierung als Auto-Pausiert, um den Status zu halten
+                 timer.autoPaused = true;
+                 
+                 // Visuelles Update, wenn Auto-Pause aktiv
+                 document.getElementById('timerStatus').innerText = `LÄUFT (PAUSE ${breakMinutes}M abgezogen)`;
+                 document.getElementById('timerStatus').classList.add('paused');
+            }
+        } else if (totalWorkedHours < breakThresholdHours && timer.autoPaused) {
+             // Reset der Auto-Pause, falls unter den Schwellenwert gefallen (optional, aber safer)
+             timer.autoPaused = false;
+             document.getElementById('timerStatus').classList.remove('paused');
+        }
+
+
+        displayTimerTime(adjustedTimeMs);
+        renderTimerLogBar();
+    }
+    
+    function displayTimerTime(ms) {
+        const h = Math.floor(ms / 3600000);
+        const m = Math.floor((ms % 3600000) / 60000);
+        const s = Math.floor((ms % 60000) / 1000);
+        document.getElementById('timerDisplay').innerText = `${h<10?'0'+h:h}:${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+    }
+    
+    function renderTimerLogBar() {
+        const logBar = document.getElementById('timerLogBar');
+        const statusEl = document.getElementById('timerStatus');
+        logBar.innerHTML = '';
+        
+        if (timer.log.length === 0) {
+            statusEl.innerText = 'STOP';
+            statusEl.classList.remove('running', 'paused', 'max');
+            return;
+        }
+
+        const firstStart = timer.log.find(l => l.action === 'start')?.time || Date.now();
+        const totalDuration = (timer.running ? Date.now() : timer.log.at(-1)?.time || firstStart) - firstStart;
+        
+        if (totalDuration <= 0) return;
+
+        let cumulativeTime = 0;
+        let lastTime = firstStart;
+        
+        // Status der Leiste
+        statusEl.innerText = timer.running ? 'LÄUFT' : 'PAUSIERT';
+        statusEl.classList.remove('paused');
+        statusEl.classList.add(timer.running ? 'running' : 'paused');
+
+        if (timer.autoPaused) {
+             statusEl.innerText = `MAX-ZEIT ERREICHT (Auto-Pause)`;
+             statusEl.classList.add('max');
+        }
+
+        // Protokolle durchlaufen und Segmente hinzufügen
+        for (let i = 0; i < timer.log.length; i++) {
+            const logEntry = timer.log[i];
+            
+            if (logEntry.action === 'pause' || logEntry.action === 'stop') {
+                const segmentDuration = logEntry.time - lastTime;
+                
+                // Segment für die LÄUFENDE Zeit
+                if (segmentDuration > 0) {
+                    const widthPercent = (segmentDuration / totalDuration) * 100;
+                    const leftPercent = (cumulativeTime / totalDuration) * 100;
+                    
+                    const runningSegment = document.createElement('div');
+                    runningSegment.className = 'timer-log-segment';
+                    runningSegment.style.background = 'var(--primary)';
+                    runningSegment.style.width = `${widthPercent}%`;
+                    runningSegment.style.left = `${leftPercent}%`;
+                    logBar.appendChild(runningSegment);
+                    
+                    cumulativeTime += segmentDuration;
+                }
+                
+                // Segment für die PAUSIERTE Zeit (nur bei 'pause' und wenn es nicht der letzte Eintrag ist)
+                if (logEntry.action === 'pause' && timer.log[i+1]?.action === 'start') {
+                    const pauseStart = logEntry.time;
+                    const pauseEnd = timer.log[i+1].time;
+                    const pauseDuration = pauseEnd - pauseStart;
+                    
+                    if (pauseDuration > 0) {
+                        const widthPercent = (pauseDuration / totalDuration) * 100;
+                        const leftPercent = (cumulativeTime / totalDuration) * 100;
+
+                        const pauseSegment = document.createElement('div');
+                        pauseSegment.className = 'timer-log-segment';
+                        pauseSegment.style.background = 'var(--audit-warn)';
+                        pauseSegment.style.width = `${widthPercent}%`;
+                        pauseSegment.style.left = `${leftPercent}%`;
+                        logBar.appendChild(pauseSegment);
+                        
+                        cumulativeTime += pauseDuration;
+                    }
+                    lastTime = pauseEnd;
+                } else if (logEntry.action === 'stop') {
+                     lastTime = logEntry.time;
+                }
+                
+            } else if (logEntry.action === 'start') {
+                 lastTime = logEntry.time;
+            }
+        }
+        
+        // Wenn der Timer gerade läuft, das finale Segment bis zum Ende der Leiste zeichnen
+        if (timer.running) {
+             const segmentDuration = Date.now() - lastTime;
+             if (segmentDuration > 0) {
+                 const widthPercent = (segmentDuration / totalDuration) * 100;
+                 const leftPercent = (cumulativeTime / totalDuration) * 100;
+
+                 const runningSegment = document.createElement('div');
+                 runningSegment.className = 'timer-log-segment';
+                 runningSegment.style.background = 'var(--primary)';
+                 runningSegment.style.width = `${widthPercent}%`;
+                 runningSegment.style.left = `${leftPercent}%`;
+                 logBar.appendChild(runningSegment);
+             }
+        }
+    }
+
+    // --- VACATION & FEIERTAGS MANAGEMENT --- (Unverändert)
+    
+    function recalculateVacationUsed() {
+        const vacationEntries = data.entries.filter(e => e.type === 'vacation' && e.expected > 0);
+        data.settings.vacation.used = vacationEntries.length;
+    }
+
+    function bookPeriod() {
+        const startStr = document.getElementById('periodStart').value;
+        const endStr = document.getElementById('periodEnd').value;
+        const periodType = document.getElementById('periodType').value;
+        
+        if (!startStr || !endStr) return alert('Bitte Start- und Enddatum wählen.');
+
+        const startDate = new Date(startStr);
+        const endDate = new Date(endStr);
+        if (startDate > endDate) return alert('Startdatum muss vor Enddatum liegen.');
+        
+        const tempEntries = [];
+        const daysToOverride = [];
+        let currentDate = new Date(startDate);
+        
+        while (currentDate <= endDate) {
+            const dateKey = currentDate.toISOString().split('T')[0];
+            const dayIndex = currentDate.getDay(); 
+            const expected = data.settings.hours[dayIndex] || 0;
+            
+            if (expected > 0) { 
+                
+                const existingEntry = data.entries.find(e => e.date === dateKey);
+
+                if (existingEntry) {
+                     daysToOverride.push(dateKey);
+                }
+                
+                tempEntries.push({
+                    id: Date.now() + Math.random(),
+                    date: dateKey,
+                    type: periodType,
+                    worked: expected,
+                    expected: expected,
+                    diff: 0,
+                    info: periodType === 'vacation' ? 'Urlaub (Block)' : 'Firmen-Frei/Feiertag (Block)',
+                    isPeriod: true,
+                    breakMins: 0, shiftEnd: '', shiftWarning: false
+                });
+            }
+
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        if (daysToOverride.length > 0) {
+            if (!confirm(`Achtung! ${daysToOverride.length} Tage haben bereits Einträge (z.B. Arbeit oder Schule). Sollen diese überschrieben/gelöscht werden?`)) {
+                return;
+            }
+            data.entries = data.entries.filter(e => !daysToOverride.includes(e.date));
+        }
+
+        data.entries.push(...tempEntries);
+        recalculateVacationUsed();
+        
+        alert(`${tempEntries.length} Tage vom Typ "${periodType}" erfolgreich gebucht!`);
+        save();
+        document.getElementById('settingsModal').classList.remove('active');
+    }
+    
     function getGermanHolidays(year) {
         const holidays = [];
         const pad = n => (n < 10 ? '0' : '') + n;
@@ -813,14 +1179,12 @@
         };
         const add = (date, name) => holidays.push({ date: toKey(date), name, type: 'holiday' });
 
-        // FEIERTAGS-BERECHNUNG (Bundesweit + Wichtige Regionale)
         add(new Date(year, 0, 1), "Neujahr");
         add(new Date(year, 4, 1), "Tag der Arbeit");
         add(new Date(year, 9, 3), "Tag der Deutschen Einheit");
         add(new Date(year, 11, 25), "1. Weihnachtstag");
         add(new Date(year, 11, 26), "2. Weihnachtstag");
         
-        // Bewegliche Feiertage
         add(addDays(easter, -2), "Karfreitag");
         add(addDays(easter, 1), "Ostermontag");
         add(addDays(easter, 39), "Christi Himmelfahrt");
@@ -845,15 +1209,13 @@
 
         holidays.forEach(h => {
             const hDate = h.date;
+            const dateObj = new Date(hDate);
             
-            // Nur buchen, wenn der Tag in der Datenbank fehlt
             if (!existingDates.includes(hDate)) {
                 
-                const dateObj = new Date(hDate);
                 const dayIndex = dateObj.getDay();
                 const expected = data.settings.hours[dayIndex] || 0;
 
-                // Nur buchen, wenn es ein Soll-Arbeitstag ist (Mo-Fr) UND in der Vergangenheit/nahen Zukunft
                 if (expected > 0 && dayIndex >= 1 && dayIndex <= 5 && new Date(hDate).getTime() < now.getTime() + (30 * 86400000)) { 
                     const entry = {
                         id: Date.now() + Math.random(),
@@ -863,10 +1225,8 @@
                         expected: expected,
                         diff: 0,
                         info: h.name, 
-                        isPeriod: false,
-                        breakMins: 0,
-                        shiftEnd: '',
-                        shiftWarning: false
+                        isPeriod: false, 
+                        breakMins: 0, shiftEnd: '', shiftWarning: false
                     };
                     data.entries.push(entry);
                     bookedHolidays.push(entry);
@@ -874,7 +1234,6 @@
             }
         });
         
-        // NEW: Protokollierung des Holiday Checks
         localStorage.setItem('tg_last_holiday_check', JSON.stringify({
             timestamp: Date.now(),
             count: bookedHolidays.length,
@@ -885,7 +1244,7 @@
             data.entries.sort((a,b) => new Date(b.date) - new Date(a.date));
             save();
         } else {
-            updateUI(); // Auch wenn nichts gebucht wurde, UI aktualisieren, um Audit-Protokoll zu füllen
+            updateUI(); 
         }
     }
     
@@ -896,6 +1255,7 @@
         const now = new Date();
         let week=0, month=0, total=0, totalWorked=0, countDays=0;
         let sickSum=0, vacSum=0, workSum=0, schoolSum=0, holidaySum=0; 
+        let usedVacationDays = 0; 
         let trendData = [];
         let runningTotal = 0;
 
@@ -905,11 +1265,13 @@
             runningTotal += e.diff;
             trendData.push(runningTotal);
             if(e.type==='sick') sickSum += e.worked;
-            else if(e.type==='vacation') vacSum += e.worked;
+            else if(e.type==='vacation') { vacSum += e.worked; usedVacationDays++; }
             else if(e.type==='school') schoolSum += e.worked;
             else if(e.type==='holiday') holidaySum += e.worked;
             else workSum += e.worked;
         });
+        
+        data.settings.vacation.used = usedVacationDays + parseFloat(data.settings.vacation.usedManual || 0);
 
         data.entries.forEach(e => {
             const d = new Date(e.date);
@@ -940,10 +1302,16 @@
         const projected = total + (dailyDrift * (365 - dayOfYear));
         document.getElementById('valProjected').innerText = (projected>=0?'+':'') + projected.toFixed(0) + 'h';
 
+        const totalVacation = parseFloat(data.settings.vacation.total);
+        const usedVacation = data.settings.vacation.used;
+        document.getElementById('valVacationUsed').innerText = `${usedVacation} / ${totalVacation}`;
+        const vacPct = (usedVacation / totalVacation) * 100;
+        document.getElementById('vacationProgressBar').style.width = `${Math.min(vacPct, 100)}%`;
+
         renderLists();
         renderTrend(trendData, 'trendChart');
         renderDonut(workSum, vacSum, sickSum, schoolSum, holidaySum);
-        renderAuditProtocol(); // NEW: Audit Protokoll rendern
+        renderAuditProtocol();
     }
     
     // --- NEW AUDIT PROTOCOL RENDER ---
@@ -956,7 +1324,6 @@
             return new Date(timestamp).toLocaleDateString('de-DE');
         };
 
-        // 1. Autosave
         const saveTime = localStorage.getItem('tg_last_save');
         if (saveTime) {
             document.getElementById('auditSaveValue').innerText = dateFormatter(parseInt(saveTime));
@@ -966,7 +1333,6 @@
             document.getElementById('auditSave').classList.add('danger');
         }
 
-        // 2. Feiertag
         const holidayLog = localStorage.getItem('tg_last_holiday_check');
         const holidayEl = document.getElementById('auditHoliday');
         if (holidayLog) {
@@ -985,14 +1351,13 @@
             holidayEl.classList.add('warn');
         }
 
-        // 3. Schichtwarnung
         const lastWarning = data.entries.find(e => e.shiftWarning === true && e.type === 'work');
         const shiftEl = document.getElementById('auditShift');
         
-        shiftEl.classList.remove('warn', 'success');
+        shiftEl.classList.remove('warn', 'success', 'danger');
 
         if (lastWarning) {
-            document.getElementById('auditShiftValue').innerText = `${lastWarning.date} (${lastWarning.worked.toFixed(1)}h)`;
+            document.getElementById('auditShiftValue').innerText = `${new Date(lastWarning.date).toLocaleDateString('de-DE')} (${lastWarning.worked.toFixed(1)}h)`;
             shiftEl.classList.add('danger');
         } else {
             document.getElementById('auditShiftValue').innerText = 'Keine Überziehung erfasst!';
@@ -1001,7 +1366,6 @@
     }
     
     // --- CHARTS (Bar Chart Fix included) ---
-    // The rest of the rendering functions (setRadial, renderLists, renderTrend, renderDonut, etc.) are included here for completeness and to ensure the Bar Chart Fix is present.
 
     function setRadial(ringId, txtId, val) {
         const el = document.getElementById(ringId);
@@ -1190,8 +1554,6 @@
         avgDiffEl.innerText = `${data.kpiAvgMonthlyDiff >= 0 ? '+' : ''}${data.kpiAvgMonthlyDiff.toFixed(1)}h`;
         avgDiffEl.style.color = data.kpiAvgMonthlyDiff >= 0 ? 'var(--primary)' : 'var(--danger)';
 
-
-        // 2. Render Weekly Bar Chart (Soll-Ist-Vergleich) - MIT FIX DER SKALIERUNG
         const barContainer = document.getElementById('chartWeeklyPerformance');
         const weeklyBars = data.weekly;
         
@@ -1231,7 +1593,6 @@
         barContainer.appendChild(barGrid);
 
 
-        // 3. Render Monthly Trend Line Chart
         const monthlyDiffs = data.monthly.map(d => d.diff);
         const monthlyLabels = data.monthly.map(d => d.label);
         
@@ -1275,7 +1636,7 @@
         `;
     }
 
-    // --- HILFSFUNKTIONEN ---
+    // --- HILFSFUNKTIONEN (Unverändert) ---
     function isOddWeek(d) { return getWeek(d) % 2 !== 0; }
 
     function getWeek(d) {
@@ -1316,6 +1677,7 @@
     function delEntry(id) {
         if(confirm('Löschen?')) {
             data.entries = data.entries.filter(e => e.id !== id);
+            recalculateVacationUsed(); 
             save();
         }
     }
@@ -1375,12 +1737,20 @@
         document.getElementById('confBreakThresh').value = data.settings.break.thresh;
         document.getElementById('confBreakMin').value = data.settings.break.min;
         for(let i=1; i<=5; i++) document.getElementById('h'+i).value = data.settings.hours[i];
+        
+        document.getElementById('confVacationTotal').value = data.settings.vacation.total || 30;
+        document.getElementById('confVacationUsedManual').value = data.settings.vacation.usedManual || 0;
+        document.getElementById('vacationRemaining').innerText = (data.settings.vacation.total - data.settings.vacation.used).toFixed(0);
     }
     function saveSettings() {
         data.settings.name = document.getElementById('confName').value;
         data.settings.break.thresh = parseFloat(document.getElementById('confBreakThresh').value);
         data.settings.break.min = parseFloat(document.getElementById('confBreakMin').value);
         for(let i=1; i<=5; i++) data.settings.hours[i] = parseFloat(document.getElementById('h'+i).value);
+        
+        data.settings.vacation.total = parseFloat(document.getElementById('confVacationTotal').value);
+        data.settings.vacation.usedManual = parseFloat(document.getElementById('confVacationUsedManual').value);
+        recalculateVacationUsed();
         
         save();
         document.getElementById('settingsModal').classList.remove('active');
