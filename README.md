@@ -1,4 +1,4 @@
-# ⏱ TimeTracker PRO
+# ⏱ Time.Tracker.SingleFile
 
 > **Eine moderne, hochperformante Zeiterfassungs- und Gleitzeitmanagement-Anwendung mit umfangreicher Analytics.**
 
@@ -6,7 +6,7 @@
 
 ## 🌟 Überblick
 
-**TimeTracker PRO** ist eine webbasierte Echtzeit-Zeiterfassungslösung mit fortgeschrittener Gleitzeitverwaltung, Performance-Analytics und intelligenter Urlaubsverwaltung. Gebaut mit modernster Frontend-Technologie für maximale Benutzerfreundlichkeit.
+**Time.Tracker.SingleFile** ist eine webbasierte Echtzeit-Zeiterfassungslösung mit fortgeschrittener Gleitzeitverwaltung, Performance-Analytics und intelligenter Urlaubsverwaltung. Gebaut mit modernster Frontend-Technologie für maximale Benutzerfreundlichkeit.
 
 ### Kernfeatures
 
@@ -30,7 +30,7 @@
 ### Dashboard-Übersicht
 ```
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                   TIMETRACKER PRO             ┃
+┃            Time.Tracker.SingleFile            ┃
 ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 ┃  Woche: +2.5h  │  Monat: +8.2h  │ Gleitzeit: +15.7h ┃
 ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -249,7 +249,7 @@ Holiday  → Amber (#f59e0b)
 ### Installation
 ```bash
 # 1. Repository klonen
-git clone https://github.com/yourusername/timetracker-pro.git
+git clone https://github.com/TechNova-App-Team/Time.Tracker.SingleFile.git
 
 # 2. Datei öffnen
 open Rechner.html
@@ -380,7 +380,7 @@ Dateigröße:          ~85 KB (HTML+CSS+JS)
 
 ```
 MIT License - Siehe LICENSE.md für Details
-Copyright © 2025 TimeTracker PRO Contributors
+Copyright © 2025 Time.Tracker.SingleFile Contributors
 ```
 
 ---
@@ -417,7 +417,7 @@ Copyright © 2025 TimeTracker PRO Contributors
 ## 📊 Statistiken
 
 ```
-├─ Code-Zeilen:          ~1000 (HTML/CSS/JS gemischt)
+├─ Code-Zeilen:          ~1700 (HTML/CSS/JS gemischt)
 ├─ Komponenten:          15+ (Cards, Charts, Modals)
 ├─ CSS-Variablen:        20+ (Theme System)
 ├─ JavaScript-Funktionen:30+
@@ -490,14 +490,14 @@ Q4 2025:
 ### 📝 Versionshistorie
 
 ```
-v2.0.0 (2025-11-27)
+v1.2.0 (2025-11-27)
 ├─ ✨ Live-Timer mit Segment-Logging
 ├─ 📊 Performance Analytics Dashboard
 ├─ 🌴 Intelligente Urlaubsverwaltung
 ├─ ⚙️ Erweiterte Einstellungen
 └─ 🎨 Neue Glassmorphism UI
 
-v1.5.0 (2025-11-20)
+v1.1.0 (2025-11-20)
 ├─ 🔧 Feiertags-Auto-Integration
 ├─ 📈 Saldo-Trend Chart
 └─ 🎯 KPI-Ring Visualisierungen
@@ -508,4 +508,4 @@ v1.0.0 (2025-11-15)
 
 ---
 
-**TimeTracker PRO v2.0.0** | Gebaut mit modernstem Web-Standard | 🚀 Production Ready
+**Time.Tracker.SingleFile V1.2.0 ** | Gebaut mit modernstem Web-Standard | 🚀 Production Ready
