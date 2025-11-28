@@ -57,6 +57,7 @@
             width: var(--sidebar-width);
             background: var(--bg-sidebar);
             backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border-right: 1px solid var(--border);
             height: 100vh;
             position: fixed;
@@ -64,6 +65,12 @@
             display: flex;
             flex-direction: column;
             z-index: 100;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar.hidden {
+            transform: translateX(-100%);
         }
 
         .brand {
@@ -111,6 +118,11 @@
             flex: 1;
             padding: 3rem;
             width: calc(100% - var(--sidebar-width));
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .main.full-width {
+             margin-left: 0;
+             width: 100%;
         }
 
         .view-section { display: none; animation: fadeIn 0.4s ease forwards; }
@@ -130,13 +142,35 @@
         }
 
         /* --- HEADER --- */
-        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            margin-bottom: 2.5rem; 
+            position: relative; /* Für den Mobile Button */
+        }
         .greeting { font-size: 0.85rem; color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
         .page-title { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
         .date-badge { 
             background: rgba(255,255,255,0.03); padding: 10px 20px; border-radius: 50px; 
             border: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-muted); 
         }
+        /* Mobile Menu Button */
+        #mobileMenuToggle {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 101;
+        }
+
 
         /* --- KPI GRID --- */
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
@@ -236,7 +270,27 @@
             justify-content: space-between;
             align-items: center;
         }
-
+        /* Dashboard Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: -10px; /* An die KPI-Grid anrücken */
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+        }
+        .quick-actions button {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 10px;
+            font-size: 0.85rem;
+        }
+        .quick-actions button:hover {
+            background: var(--primary-dim);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
 
         /* --- MODAL --- */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
@@ -370,11 +424,6 @@
             color: var(--text-muted);
             margin-top: 5px;
         }
-        .goal-type-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
         .goal-delete-btn {
             background: none;
             border: none;
@@ -430,6 +479,124 @@
             padding: 1.25rem;
             border-radius: 12px;
         }
+        
+        /* School KPI Fixes */
+        .school-kpi-note {
+             font-size: 2.5rem;
+             font-weight: 800;
+             font-family: var(--font-mono);
+             margin: 5px 0;
+        }
+        .school-kpi-sub {
+             font-size: 0.7rem;
+             color: var(--text-muted);
+             text-transform: uppercase;
+        }
+        
+        /* IHK Rework Styles */
+        .ihk-progress-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2.5rem 1.5rem;
+            border-left: 5px solid var(--ihk);
+        }
+        .ihk-secondary-kpi {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 3px solid var(--ihk);
+            text-align: center;
+        }
+        .ihk-metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 5px;
+            font-family: var(--font-mono);
+        }
+        .ihk-metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .ihk-note-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+        }
+        .ihk-note-group {
+             display: grid;
+             grid-template-columns: 1fr 1fr;
+             gap: 15px;
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 300px;
+                transform: translateX(0);
+                position: fixed;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+                z-index: 200;
+            }
+            .sidebar.hidden {
+                transform: translateX(-300px);
+            }
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+            .main .header {
+                 padding-left: 60px; /* Platz für den Toggle */
+            }
+            #mobileMenuToggle {
+                display: block;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            .chart-deep-row {
+                grid-template-columns: 1fr;
+            }
+            .chart-deep-row > div {
+                border-right: none !important;
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 1.5rem;
+                padding-right: 0 !important;
+                padding-left: 0 !important;
+            }
+            .heatmap-grid {
+                grid-template-columns: repeat(8, 1fr); /* Auf 8 Spalten reduzieren */
+                gap: 8px;
+            }
+            .heatmap-grid > span:nth-child(n+9) {
+                 display: none; /* Nur 8 Labels anzeigen */
+            }
+            .input-wrapper {
+                 grid-template-columns: 1fr;
+            }
+        }
+        /* Mobile Overlay für Sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 199;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
 
         /* ... (restliches CSS unverändert) ... */
 
@@ -437,7 +604,9 @@
 </head>
 <body>
 
-    <nav class="sidebar">
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <nav class="sidebar" id="sidebar">
         <div class="brand">
             TIME.PRO
         </div>
@@ -474,7 +643,9 @@
         <input type="file" id="fileImp" hidden onchange="importData(event)">
     </nav>
 
-    <main class="main">
+    <main class="main" id="mainContent">
+        
+        <button id="mobileMenuToggle" onclick="toggleSidebar()">☰</button>
         
         <header class="header">
             <div>
@@ -527,6 +698,12 @@
                         <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px;"><div id="vacationProgressBar" style="width:0%; background:var(--success); height:100%;"></div></div>
                     </div>
                 </div>
+            </div>
+            
+            <div class="quick-actions">
+                <button onclick="openCorrection('month')">± Saldo korrigieren</button>
+                <button onclick="openSettings()">⚙️ Einstellungen</button>
+                <button onclick="checkAndBookHolidays()">🏖️ Feiertage prüfen</button>
             </div>
             
             <div class="audit-grid">
@@ -704,56 +881,59 @@
         </div>
 
         <div id="view-ihk" class="view-section">
-            <div class="kpi-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                <div class="ihk-kpi">
-                    <div class="ihk-kpi-label">Ausbildungsfortschritt</div>
+            <h2 style="margin-bottom:1.5rem; color:var(--ihk);">🎓 Karriere & Ausbildungs-Audit</h2>
+            
+            <div class="kpi-grid" style="grid-template-columns: 1.5fr 1fr 1fr;">
+                <div class="card ihk-progress-card">
+                    <div class="ihk-kpi-label">AUSBILDUNGSFORTSCHRITT</div>
                     <div class="ihk-kpi-value" id="ihkProgress">0%</div>
-                    <div class="progress-bar-ihk">
+                    <div class="progress-bar-ihk" style="width: 80%;">
                         <div class="progress-ihk" id="ihkProgressBar" style="width: 0%;"></div>
                     </div>
-                </div>
-
-                <div class="ihk-kpi" style="border-left-color: var(--danger);">
-                    <div class="ihk-kpi-label">Tage bis zur Abschlussprüfung</div>
-                    <div class="ihk-kpi-value" id="ihkCountdownEndAudit">---</div>
-                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px;">
-                        Ende: <span id="ihkExamDateEnd">Datum fehlt</span>
-                    </div>
-                </div>
-                
-                <div class="ihk-kpi" style="border-left-color: var(--school);">
-                    <div class="ihk-kpi-label">Erforderliche Soll-Stunden (Gesamt)</div>
-                    <div class="ihk-kpi-value" id="ihkTotalExpectedHours">0h</div>
                     <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px;">
                         <span id="ihkStartEndDates">Start/Ende fehlen</span>
                     </div>
                 </div>
+
+                <div class="card" style="display:flex; flex-direction:column; justify-content:space-around; gap:10px;">
+                    <div class="ihk-secondary-kpi" style="border-left-color: var(--danger);">
+                        <div class="ihk-metric-label">TAGE BIS ABSCHLUSSPRÜFUNG</div>
+                        <div class="ihk-metric-value" id="ihkCountdownEndAudit">---</div>
+                        <div class="ihk-metric-label" style="font-size:0.7rem;">Ende: <span id="ihkExamDateEnd">Datum fehlt</span></div>
+                    </div>
+                    <div class="ihk-secondary-kpi" style="border-left-color: var(--school);">
+                        <div class="ihk-metric-label">TAGE BIS ZWISCHENPRÜFUNG</div>
+                        <div class="ihk-metric-value" id="ihkCountdownZwischen">---</div>
+                        <div class="ihk-metric-label" style="font-size:0.7rem;">Datum: <span id="ihkExamDateZwischen">Datum fehlt</span></div>
+                    </div>
+                </div>
+                
+                <div class="card" style="display:flex; flex-direction:column; justify-content:space-around; gap:10px;">
+                     <div class="ihk-secondary-kpi" style="border-left-color: var(--ihk);">
+                        <div class="ihk-metric-label">SOLL-STUNDEN (GESAMT)</div>
+                        <div class="ihk-metric-value" id="ihkTotalExpectedHours">0h</div>
+                        <div class="ihk-metric-label" style="font-size:0.7rem;">Erwartete Soll-Zeit bis Ende</div>
+                    </div>
+                    <div class="ihk-secondary-kpi">
+                        <div class="ihk-metric-label">FEHLZEIT WARNUNG</div>
+                        <div class="ihk-metric-value" id="ihkMissedTimeWarning" style="font-size:1.5rem;">Daten fehlen</div>
+                        <div class="ihk-metric-label" style="font-size:0.7rem;">Ø Fehltage in % der Laufzeit</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="kpi-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                <div class="ihk-exam-kpi" style="background:var(--bg-glass); border:1px solid var(--border); border-left:5px solid var(--danger);">
-                    <div class="ihk-kpi-label">Kumulierte Krankheitstage</div>
-                    <div style="font-size:2.5rem; font-weight:800; color:var(--danger);" id="ihkSickDays">0</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
-                        Tage mit Typ 'Krank' gebucht
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="kpi-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="ihk-secondary-kpi" style="border-left-color: var(--danger);">
+                        <div class="ihk-metric-label">Kumulierte Krankheitstage</div>
+                        <div class="ihk-metric-value" id="ihkSickDays">0</div>
                     </div>
-                </div>
-                <div class="ihk-exam-kpi" style="background:var(--bg-glass); border:1px solid var(--border); border-left:5px solid var(--school);">
-                    <div class="ihk-kpi-label">Kumulierte Berufsschultage</div>
-                    <div style="font-size:2.5rem; font-weight:800; color:var(--school);" id="ihkSchoolDays">0</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
-                        Tage mit Typ 'Schule' gebucht
-                    </div>
-                </div>
-                 <div class="ihk-exam-kpi" style="background:var(--bg-glass); border:1px solid var(--border); border-left:5px solid var(--audit-warn);">
-                    <div class="ihk-kpi-label">Warnung Fehlzeit (Max 10%)</div>
-                    <div style="font-size:1.5rem; font-weight:700; color:var(--audit-warn);" id="ihkMissedTimeWarning">Daten fehlen</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
-                        Aktuelle Fehlzeit in % der Laufzeit
+                     <div class="ihk-secondary-kpi" style="border-left-color: var(--school);">
+                        <div class="ihk-metric-label">Kumulierte Berufsschultage</div>
+                        <div class="ihk-metric-value" id="ihkSchoolDays">0</div>
                     </div>
                 </div>
             </div>
-
 
             <div class="card">
                 <h3 style="margin-bottom:1.5rem;">IHK Ausbildungsdaten pflegen</h3>
@@ -798,25 +978,15 @@
             </div>
             
             <div class="card">
-                <h4 style="margin-bottom:10px;">Countdown und Noten-Übersicht</h4>
-                <div class="ihk-input-group">
-                    <div class="ihk-exam-kpi">
-                        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">Tage bis zur Zwischenprüfung:</div>
-                        <div style="font-size:1.5rem; font-weight:700;" id="ihkCountdownZwischen">---</div>
+                <h4 style="margin-bottom:10px;">Noten- & Countdown-Übersicht</h4>
+                <div class="ihk-note-group">
+                    <div class="ihk-secondary-kpi card" style="border-left: 3px solid var(--ihk);">
+                        <div class="ihk-metric-label">Zwischenprüfung Note:</div>
+                        <div class="ihk-note-value" id="ihkDisplayNoteZwischen">---</div>
                     </div>
-                    <div class="ihk-exam-kpi">
-                        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">Note Zwischenprüfung:</div>
-                        <div style="font-size:1.5rem; font-weight:700;" id="ihkDisplayNoteZwischen">---</div>
-                    </div>
-                </div>
-                 <div class="ihk-input-group">
-                    <div class="ihk-exam-kpi">
-                        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">Tage bis zur Abschlussprüfung:</div>
-                        <div style="font-size:1.5rem; font-weight:700;" id="ihkCountdownEndAudit">---</div>
-                    </div>
-                    <div class="ihk-exam-kpi">
-                        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">Note Abschlussprüfung:</div>
-                        <div style="font-size:1.5rem; font-weight:700;" id="ihkDisplayNoteAbschluss">---</div>
+                    <div class="ihk-secondary-kpi card" style="border-left: 3px solid var(--ihk);">
+                        <div class="ihk-metric-label">Abschlussprüfung Note:</div>
+                        <div class="ihk-note-value" id="ihkDisplayNoteAbschluss">---</div>
                     </div>
                 </div>
             </div>
@@ -831,15 +1001,15 @@
                         (Alle Noten, gewichtet 1:1)
                     </div>
                 </div>
-                <div class="ihk-exam-kpi" style="background:var(--bg-glass); border:1px solid var(--border); border-left:5px solid var(--note-good);">
+                <div class="ihk-exam-kpi card" id="kpiBestNote">
                     <div class="ihk-kpi-label">BESTE NOTE</div>
-                    <div style="font-size:2.5rem; font-weight:800;" id="schoolBestNote">---</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;" id="schoolBestSubject"></div>
+                    <div class="school-kpi-note" id="schoolBestNote">---</div>
+                    <div class="school-kpi-sub" id="schoolBestSubject"></div>
                 </div>
-                 <div class="ihk-exam-kpi" style="background:var(--bg-glass); border:1px solid var(--border); border-left:5px solid var(--note-bad);">
+                 <div class="ihk-exam-kpi card" id="kpiWorstNote">
                     <div class="ihk-kpi-label">SCHLECHTESTE NOTE</div>
-                    <div style="font-size:2.5rem; font-weight:800;" id="schoolWorstNote">---</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;" id="schoolWorstSubject"></div>
+                    <div class="school-kpi-note" id="schoolWorstNote">---</div>
+                    <div class="school-kpi-sub" id="schoolWorstSubject"></div>
                 </div>
             </div>
 
@@ -1071,6 +1241,7 @@
     };
     let timer = { id:null, start:0, paused:0, running:false, log:[] }; 
     let editId = null;
+    let isSidebarOpen = true; // Für Desktop standardmäßig offen
 
     // --- INIT ---
     window.onload = () => {
@@ -1080,7 +1251,9 @@
         if(!data.settings.break) data.settings.break = {thresh:6, min:30};
         if(!data.settings.vacation) data.settings.vacation = {total:30, used:0, usedManual:0};
         
-        if(!data.settings.ihk || !data.settings.ihk.note_zwischen) data.settings.ihk = {start: '', end: '', exam_zwischen: '', note_zwischen: '', note_abschluss: ''};
+        if(!data.settings.ihk || !data.settings.ihk.note_zwischen) {
+             data.settings.ihk = {start: '', end: '', exam_zwischen: '', note_zwischen: '', note_abschluss: ''};
+        }
         
         if(!data.settings.school || !data.settings.school.grades) {
              data.settings.school = {
@@ -1098,6 +1271,13 @@
         if (data.settings.ihk.exam) { 
              data.settings.ihk.end = data.settings.ihk.exam;
              delete data.settings.ihk.exam;
+        }
+
+        // Mobile View Initialisierung
+        if (window.innerWidth < 1024) {
+             isSidebarOpen = false;
+             document.getElementById('sidebar').classList.add('hidden');
+             document.getElementById('mainContent').classList.add('full-width');
         }
 
 
@@ -1147,7 +1327,31 @@
         if (document.getElementById('view-goals').classList.contains('active')) {
              renderGoalsView();
         }
+        
+        // Initiales Laden der IHK-Felder, da sie nicht direkt in window.onload gesetzt wurden
+        if (document.getElementById('view-ihk').classList.contains('active')) {
+             renderIHKView();
+        }
     };
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('mainContent');
+        const overlay = document.querySelector('.sidebar-overlay');
+        
+        if (window.innerWidth < 1024) {
+             // Mobile Toggle
+             isSidebarOpen = !isSidebarOpen;
+             sidebar.classList.toggle('hidden', !isSidebarOpen);
+             overlay.classList.toggle('active', isSidebarOpen);
+        } else {
+             // Desktop Toggle
+             isSidebarOpen = !isSidebarOpen;
+             sidebar.classList.toggle('hidden', !isSidebarOpen);
+             main.classList.toggle('full-width', !isSidebarOpen);
+        }
+    }
+
 
     function save() { 
         localStorage.setItem('tg_pro_data', JSON.stringify(data)); 
@@ -1179,6 +1383,11 @@
             'goals': 'Ziele & Trophäen',
         };
         document.querySelector('.page-title').textContent = titles[tabId];
+
+        if (window.innerWidth < 1024 && tabId !== 'dashboard') {
+             toggleSidebar(); // Sidebar auf Mobile nach Klick ausblenden
+        }
+
 
         if (tabId === 'performance') {
             const perfData = calculatePerformanceData();
@@ -1230,6 +1439,23 @@
         }
     }
 
+    function calculatePositiveWeeks() {
+        const weeklyDiffs = {};
+        data.entries.forEach(e => {
+            const date = new Date(e.date);
+            const year = date.getFullYear();
+            const week = getWeek(date);
+            const key = `${year}-${week}`;
+            
+            if (!weeklyDiffs[key]) {
+                weeklyDiffs[key] = 0;
+            }
+            weeklyDiffs[key] += e.diff;
+        });
+        
+        return Object.values(weeklyDiffs).filter(diff => diff > 0.5).length; // Mehr als 0.5h im Plus zählen
+    }
+
     function addCustomGoal() {
         const title = document.getElementById('goalTitle').value.trim();
         const type = document.getElementById('goalType').value;
@@ -1266,12 +1492,7 @@
         const goalsListEl = document.getElementById('goalsList');
         let html = '';
         
-        // Hardcoded goals for initial visibility/examples
-        const goalsToDisplay = [
-             ...data.settings.goals
-        ];
-        
-        goalsToDisplay.forEach(goal => {
+        data.settings.goals.forEach(goal => {
             const current = calculateGoalValue(goal.type);
             const progress = Math.min((current / goal.target) * 100, 100);
             const achieved = progress >= 100;
@@ -1279,7 +1500,10 @@
             const unit = getGoalUnit(goal.type);
             
             // Formatierung für Stunden/Saldo-Ziele
-            const currentDisplay = (goal.type === 'TOTAL_DIFF_HOURS' ? (current >= 0 ? '+' : '') : '') + current.toFixed(1);
+            let currentDisplay = current.toFixed(1);
+            if (goal.type === 'TOTAL_DIFF_HOURS') {
+                 currentDisplay = (current >= 0 ? '+' : '') + current.toFixed(1);
+            }
             
             html += `
                 <div class="goal-card" style="border-left-color: ${color}; opacity: ${achieved ? 1 : 0.85};">
@@ -1305,7 +1529,7 @@
     }
 
 
-    // --- SCHOOL LOGIC ---
+    // --- SCHOOL LOGIC (FIXED KPIs) ---
     
     const getNoteColor = (note) => {
          const n = parseFloat(note);
@@ -1384,8 +1608,8 @@
     function calculateSchoolKPIs() {
         let totalSum = 0;
         let totalCount = 0;
-        let bestNote = 6.1; // Höher als die schlechteste Note (6.0)
-        let worstNote = 0.9; // Kleiner als die beste Note (1.0)
+        let bestNote = 6.1; 
+        let worstNote = 0.9; 
         let bestSubject = '---';
         let worstSubject = '---';
         
@@ -1431,7 +1655,7 @@
         
         const overallAvg = totalCount > 0 ? totalSum / totalCount : 0;
         
-        // Anpassung falls nur Noten im unteren/oberen Bereich existieren
+        // Anpassung falls keine Noten existieren
         if (totalCount === 0) {
             bestNote = 0;
             worstNote = 0;
@@ -1457,28 +1681,40 @@
         const kpis = calculateSchoolKPIs();
         
         const avgEl = document.getElementById('schoolOverallAvg');
-        const bestEl = document.getElementById('schoolBestNote');
-        const worstEl = document.getElementById('schoolWorstNote');
+        const bestNoteEl = document.getElementById('schoolBestNote');
+        const bestSubjectEl = document.getElementById('schoolBestSubject');
+        const worstNoteEl = document.getElementById('schoolWorstNote');
+        const worstSubjectEl = document.getElementById('schoolWorstSubject');
+        const kpiBestCard = document.getElementById('kpiBestNote');
+        const kpiWorstCard = document.getElementById('kpiWorstNote');
+
         
         if (kpis.overallAvg > 0) {
             avgEl.innerText = kpis.overallAvg.toFixed(2);
             avgEl.style.color = getNoteColor(kpis.overallAvg);
             
-            bestEl.innerText = kpis.bestNote > 0 ? kpis.bestNote.toFixed(1) : '---';
-            bestEl.style.color = getNoteColor(kpis.bestNote);
-            document.getElementById('schoolBestSubject').innerText = kpis.bestSubject;
-
-            worstEl.innerText = kpis.worstNote > 0 ? kpis.worstNote.toFixed(1) : '---';
-            worstEl.style.color = getNoteColor(kpis.worstNote);
-            document.getElementById('schoolWorstSubject').innerText = kpis.worstSubject;
+            // Beste Note
+            bestNoteEl.innerText = kpis.bestNote > 0 ? kpis.bestNote.toFixed(1) : '---';
+            bestNoteEl.style.color = getNoteColor(kpis.bestNote);
+            bestSubjectEl.innerText = kpis.bestSubject;
+            kpiBestCard.style.borderLeftColor = getNoteColor(kpis.bestNote);
+            
+            // Schlechteste Note
+            worstNoteEl.innerText = kpis.worstNote > 0 ? kpis.worstNote.toFixed(1) : '---';
+            worstNoteEl.style.color = getNoteColor(kpis.worstNote);
+            worstSubjectEl.innerText = kpis.worstSubject;
+            kpiWorstCard.style.borderLeftColor = getNoteColor(kpis.worstNote);
 
         } else {
             avgEl.innerText = '---';
             avgEl.style.color = 'var(--school)';
-            bestEl.innerText = '---';
-            worstEl.innerText = '---';
-            document.getElementById('schoolBestSubject').innerText = '';
-            document.getElementById('schoolWorstSubject').innerText = '';
+            
+            bestNoteEl.innerText = '---';
+            worstNoteEl.innerText = '---';
+            bestSubjectEl.innerText = '';
+            worstSubjectEl.innerText = '';
+            kpiBestCard.style.borderLeftColor = 'var(--note-good)';
+            kpiWorstCard.style.borderLeftColor = 'var(--note-bad)';
         }
         
         document.getElementById('schoolGradesList').innerHTML = kpis.gradeListHTML;
@@ -1490,6 +1726,7 @@
         const { start, end, exam_zwischen, note_zwischen, note_abschluss } = data.settings.ihk;
         const now = new Date().getTime();
         
+        // **IHK FIX: Daten aus dem LocalStorage ins UI laden**
         document.getElementById('confIHKStart').value = start;
         document.getElementById('confIHKEnd').value = end;
         // Abschlussprüfungsdatum wird vom End-Datum übernommen
@@ -1498,6 +1735,7 @@
         document.getElementById('confIHKExamZwischen').value = exam_zwischen;
         document.getElementById('confIHKNoteZwischen').value = note_zwischen;
         document.getElementById('confIHKNoteAbschluss').value = note_abschluss;
+
 
         // Hilfsfunktion zur Formatierung der Note
         const formatNote = (note) => {
@@ -1628,6 +1866,7 @@
         
         // 5. Zwischenprüfung Countdown (Audit-Anzeige)
         const countdownZwischenEl = document.getElementById('ihkCountdownZwischen');
+        document.getElementById('ihkExamDateZwischen').innerText = exam_zwischen ? new Date(exam_zwischen).toLocaleDateString('de-DE') : 'Datum fehlt';
         
         if (exam_zwischen) {
             const examDate = new Date(exam_zwischen).getTime();
@@ -1647,10 +1886,10 @@
     }
     
     function saveIHKSettings() {
+        // **IHK FIX: Sicherstellung, dass alle Daten ins data-Objekt gespeichert werden**
         data.settings.ihk.start = document.getElementById('confIHKStart').value;
         data.settings.ihk.end = document.getElementById('confIHKEnd').value;
         data.settings.ihk.exam_zwischen = document.getElementById('confIHKExamZwischen').value;
-        // NEU: Noten speichern (Float-Werte)
         data.settings.ihk.note_zwischen = document.getElementById('confIHKNoteZwischen').value;
         data.settings.ihk.note_abschluss = document.getElementById('confIHKNoteAbschluss').value;
         
@@ -2795,7 +3034,10 @@
         // Render Hour Labels (8:00 - 23:00)
         heatmapHTML += '<div style="display:grid; grid-template-columns: repeat(16, 1fr); gap:5px; margin-bottom:5px; margin-top:20px;">';
         for (let i = 8; i <= 23; i++) {
-            heatmapHTML += `<span class="heatmap-label">${i}:00</span>`;
+             // Mobile Optimierung: Bei kleinerem Bildschirm nur jede 2. Stunde anzeigen
+             if (window.innerWidth >= 1024 || (i % 2 === 0)) {
+                heatmapHTML += `<span class="heatmap-label">${i}:00</span>`;
+             }
         }
         heatmapHTML += '</div>';
 
@@ -2806,7 +3048,7 @@
         }
 
         // Render Cells
-        heatmapHTML += '<div class="heatmap-grid" style="grid-template-columns: repeat(16, 1fr);">';
+        heatmapHTML += `<div class="heatmap-grid" style="grid-template-columns: repeat(${window.innerWidth < 1024 ? 8 : 16}, 1fr);">`;
         for (let i = 0; i < 16; i++) {
             const avgWorked = hourlyStats[i].count > 0 ? hourlyStats[i].totalWorked / hourlyStats[i].count : 0;
             const hour = 8 + i;
