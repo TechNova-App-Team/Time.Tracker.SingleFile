@@ -1442,13 +1442,62 @@
                     <input type="text" id="confName" class="glass-input" style="margin-bottom:2rem;" placeholder="z.B. Sven">
 
                     <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:10px; font-weight:600;">Design Accent Farbe:</label>
-                    <div style="display:flex; gap:12px; margin-bottom:2rem;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(45px, 1fr)); gap:12px; margin-bottom:2rem;">
+                        <!-- Primär Farben -->
                         <div class="color-dot" style="background:#a855f7" onclick="setTheme('#a855f7')" title="Lila"></div>
                         <div class="color-dot" style="background:#3b82f6" onclick="setTheme('#3b82f6')" title="Blau"></div>
                         <div class="color-dot" style="background:#06b6d4" onclick="setTheme('#06b6d4')" title="Cyan"></div>
                         <div class="color-dot" style="background:#10b981" onclick="setTheme('#10b981')" title="Grün"></div>
                         <div class="color-dot" style="background:#f59e0b" onclick="setTheme('#f59e0b')" title="Gelb"></div>
                         <div class="color-dot" style="background:#ec4899" onclick="setTheme('#ec4899')" title="Pink"></div>
+                        
+                        <!-- Zusätzliche Premium Farben -->
+                        <div class="color-dot" style="background:#ef4444" onclick="setTheme('#ef4444')" title="Rot"></div>
+                        <div class="color-dot" style="background:#8b5cf6" onclick="setTheme('#8b5cf6')" title="Indigo"></div>
+                        <div class="color-dot" style="background:#6366f1" onclick="setTheme('#6366f1')" title="Indigo-Hell"></div>
+                        <div class="color-dot" style="background:#0ea5e9" onclick="setTheme('#0ea5e9')" title="Sky Blue"></div>
+                        <div class="color-dot" style="background:#14b8a6" onclick="setTheme('#14b8a6')" title="Teal"></div>
+                        <div class="color-dot" style="background:#84cc16" onclick="setTheme('#84cc16')" title="Limette"></div>
+                        <div class="color-dot" style="background:#eab308" onclick="setTheme('#eab308')" title="Gelb-Hell"></div>
+                        <div class="color-dot" style="background:#fb923c" onclick="setTheme('#fb923c')" title="Orange"></div>
+                        <div class="color-dot" style="background:#f97316" onclick="setTheme('#f97316')" title="Orange-Hell"></div>
+                        <div class="color-dot" style="background:#d946ef" onclick="setTheme('#d946ef')" title="Fuchsia"></div>
+                        <div class="color-dot" style="background:#f43f5e" onclick="setTheme('#f43f5e')" title="Rose"></div>
+                        <div class="color-dot" style="background:#06d6a0" onclick="setTheme('#06d6a0')" title="Mint"></div>
+                        <div class="color-dot" style="background:#00d9ff" onclick="setTheme('#00d9ff')" title="Aqua"></div>
+                        <div class="color-dot" style="background:#7c3aed" onclick="setTheme('#7c3aed')" title="Violett"></div>
+                        <div class="color-dot" style="background:#db2777" onclick="setTheme('#db2777')" title="Crimson"></div>
+                        <div class="color-dot" style="background:#00b4d8" onclick="setTheme('#00b4d8')" title="Steel Blue"></div>
+                        <div class="color-dot" style="background:#a78bfa" onclick="setTheme('#a78bfa')" title="Lila-Hell"></div>
+                        <div class="color-dot" style="background:#60a5fa" onclick="setTheme('#60a5fa')" title="Blau-Hell"></div>
+                        <div class="color-dot" style="background:#4f46e5" onclick="setTheme('#4f46e5')" title="Deep Indigo"></div>
+                        <div class="color-dot" style="background:#22d3ee" onclick="setTheme('#22d3ee')" title="Cyan-Hell"></div>
+                        <div class="color-dot" style="background:#34d399" onclick="setTheme('#34d399')" title="Grün-Hell"></div>
+                    </div>
+
+                    <!-- Custom Farb-Editor (NEU) -->
+                    <div style="background:rgba(168,85,247,0.1); padding:1.5rem; border-radius:12px; border:1px solid rgba(168,85,247,0.3); margin-bottom:2rem;">
+                        <h5 style="margin-top:0; color:var(--primary); font-size:0.9rem;">🎨 Eigene Farbe erstellen</h5>
+                        
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:5px; font-weight:600;">Farbwähler:</label>
+                                <input type="color" id="customColorPicker" class="glass-input" style="height:50px; cursor:pointer; padding:4px;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:5px; font-weight:600;">Hex-Code:</label>
+                                <input type="text" id="customColorHex" class="glass-input" placeholder="#a855f7" oninput="updateColorPickerFromHex()">
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                            <button class="btn btn-primary" onclick="applyCustomColor()" style="background:var(--primary);">✓ Anwenden</button>
+                            <button class="btn" style="background:transparent; border:1px solid var(--border);" onclick="document.getElementById('customColorPicker').value='#a855f7'; updateColorFromPicker();">↺ Reset</button>
+                            <div style="background:rgba(255,255,255,0.05); border-radius:8px; border:1px solid var(--border); padding:10px; text-align:center;">
+                                <small style="color:var(--text-muted);">Vorschau:</small>
+                                <div id="colorPreview" style="width:100%; height:30px; background:#a855f7; border-radius:6px; margin-top:5px;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
