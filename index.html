@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TimeTracker V2.1.7</title>
+<title>TimeTracker V2.2.1</title>
 <meta name="description" content="TimeTracker: Eine moderne, lokal laufende Single-File Zeiterfassungs-App. Kein Server, kein Cloud, nur deine Daten. Perfekt für Auszubildende und Mitarbeiter.">
 <meta name="theme-color" content="#a855f7">
 <meta name="author" content="TechNova App Team">
@@ -27,8 +27,15 @@
 <!-- Preload External CDN Resources (für bessere Performance) -->
 <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/simple-peer@9/simplepeer.min.js">
 <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
-<script async src="https://cdn.jsdelivr.net/npm/simple-peer@9/simplepeer.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1">
+<link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+<link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js">
+<!-- External CDN Scripts -->
+<script defer src="https://cdn.jsdelivr.net/npm/simple-peer@9/simplepeer.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script async src="https://plausible.io/js/pa-jiUWAYasLo3v5kIOac5C3.js"></script>
 <script>
   window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
@@ -557,6 +564,7 @@
         .btn-icon-row { display: flex; gap: 8px; width: 100%; }
         .btn-ghost { background: rgba(255,255,255,0.05); color: #fff; flex: 1; padding: 10px; }
         .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+        .btn.active { background: var(--primary); color: #fff; }
 
         /* Very small slim help button that uses the theme color */
         .help-slim {
@@ -1886,24 +1894,6 @@
                     </div>
                 </div>
 
-                <!-- Audit Cards -->
-                <div class="dashboard-item" data-item-id="audit-cards">
-                    <div class="audit-grid">
-                        <div class="card audit-card" id="auditHoliday">
-                            <div class="audit-label">Feiertag Check</div>
-                            <div class="audit-value" style="color:var(--holiday);" id="auditHolidayValue">Wird geladen...</div>
-                        </div>
-                        <div class="card audit-card" id="auditShift">
-                            <div class="audit-label">Letzte Schichtwarnung</div>
-                            <div class="audit-value" id="auditShiftValue">Keine Warnung</div>
-                        </div>
-                        <div class="card audit-card success" id="auditSave">
-                            <div class="audit-label">Letzter Autosave</div>
-                            <div class="audit-value" id="auditSaveValue">Vor Sekunden</div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Heute / Streak / Quick Ticker -->
                 <div class="dashboard-item" data-item-id="daily-summary">
                     <div class="card" style="background:linear-gradient(90deg, rgba(168,85,247,0.08) 0%, rgba(16,185,129,0.08) 100%); border:1px solid rgba(168,85,247,0.15); padding:1rem;">
@@ -1927,23 +1917,6 @@
                                 100% { transform: translateX(-100%); }
                             }
                         </style>
-                    </div>
-                </div>
-
-                <!-- Pomodoro Timer -->
-                <div class="dashboard-item" data-item-id="pomodoro-card">
-                    <div class="card" style="background:linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.05) 100%); border:1px solid rgba(239,68,68,0.2); display:none;" id="pomodoroCard">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span style="font-size:1.5rem;">🍅</span>
-                                <h4 style="margin:0; color:#ef4444;">Pomodoro Timer</h4>
-                            </div>
-                            <button style="background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:6px; padding:4px 12px; cursor:pointer; font-size:0.75rem;" onclick="togglePomodoroMode()">Aktivieren</button>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.9rem; color:var(--text-muted);">
-                            <div>📊 <strong>25 Min</strong> Arbeitsphase</div>
-                            <div>☕ <strong>5 Min</strong> Pausenphase</div>
-                        </div>
                     </div>
                 </div>
 
@@ -3660,12 +3633,98 @@
             <h3 style="margin:0 0 20px 0; color:var(--primary);">⋯ Weitere Aktionen</h3>
             
             <div style="display:grid; grid-template-columns: 1fr; gap:12px;">
+                <button class="btn btn-ghost" onclick="openAnalyticsModal(); closeMoreActionsModal()">📊 Analytics & Insights</button>
                 <button class="btn btn-ghost" onclick="openSettings(); closeMoreActionsModal()">⚙️ Einstellungen</button>
                 <button class="btn btn-ghost" onclick="startFocusMode(); closeMoreActionsModal()">🎯 Focus Mode starten</button>
                 <button class="btn btn-ghost" onclick="openBreakSettingsModal(); closeMoreActionsModal()">🔔 Break Settings</button>
             </div>
             
             <button class="modal-close-x" aria-label="Schließen" onclick="closeMoreActionsModal()" title="Schließen">×</button>
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div class="modal" id="analyticsModal" style="display:none;">
+        <div class="modal-box" style="width:95%; max-width:800px; max-height:90vh; overflow-y:auto; padding:24px; backdrop-filter:blur(20px); border-radius:16px; border:1px solid rgba(168, 85, 247, 0.3); position:relative;">
+            <button class="modal-close-x" aria-label="Schließen" onclick="closeAnalyticsModal()" title="Schließen">×</button>
+            <h3 style="margin:0 0 20px 0; color:var(--primary);">📊 Analytics & Insights</h3>
+            
+            <!-- AI Insights -->
+            <div class="card" style="background:linear-gradient(135deg, rgba(34,211,238,0.1) 0%, rgba(34,211,238,0.05) 100%); border:1px solid rgba(34,211,238,0.2); margin-bottom:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.5rem;">🤖</span>
+                        <h4 style="margin:0; color:#22d3ee;">AI Insights</h4>
+                    </div>
+                    <button class="btn btn-ghost" onclick="generateInsights()" style="padding:6px 12px; font-size:0.8rem;">🔄 Neu</button>
+                </div>
+                <div id="insightsContentModal" style="font-size:0.9rem; color:var(--text-main); line-height:1.5;">
+                    <p>Klicke auf "Neu", um personalisierte Tipps zu bekommen!</p>
+                </div>
+            </div>
+
+            <!-- Audit Cards -->
+            <div class="audit-grid" style="margin-bottom:20px;">
+                <div class="card audit-card" id="auditHolidayModal">
+                    <div class="audit-label">Feiertag Check</div>
+                    <div class="audit-value" style="color:var(--holiday);" id="auditHolidayValueModal">Wird geladen...</div>
+                </div>
+                <div class="card audit-card" id="auditShiftModal">
+                    <div class="audit-label">Letzte Schichtwarnung</div>
+                    <div class="audit-value" id="auditShiftValueModal">Keine Warnung</div>
+                </div>
+                <div class="card audit-card success" id="auditSaveModal">
+                    <div class="audit-label">Letzter Autosave</div>
+                    <div class="audit-value" id="auditSaveValueModal">Vor Sekunden</div>
+                </div>
+            </div>
+
+            <!-- Advanced Analytics -->
+            <div class="card" style="background:linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0.05) 100%); border:1px solid rgba(59,130,246,0.2); margin-bottom:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.5rem;">📈</span>
+                        <h4 style="margin:0; color:#3b82f6;">Advanced Analytics</h4>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-ghost ${analyticsTimeFilter === 'week' ? 'active' : ''}" onclick="setAnalyticsFilter('week')" style="padding:4px 8px; font-size:0.7rem;">Woche</button>
+                        <button class="btn btn-ghost ${analyticsTimeFilter === 'month' ? 'active' : ''}" onclick="setAnalyticsFilter('month')" style="padding:4px 8px; font-size:0.7rem;">Monat</button>
+                        <button class="btn btn-ghost ${analyticsTimeFilter === 'year' ? 'active' : ''}" onclick="setAnalyticsFilter('year')" style="padding:4px 8px; font-size:0.7rem;">Jahr</button>
+                        <button class="btn btn-ghost ${analyticsTimeFilter === 'all' ? 'active' : ''}" onclick="setAnalyticsFilter('all')" style="padding:4px 8px; font-size:0.7rem;">Alle</button>
+                        <button class="btn btn-ghost" onclick="exportAnalytics()" style="padding:6px 12px; font-size:0.8rem;">📄 Export</button>
+                        <button class="btn btn-ghost" onclick="generateAdvancedAnalytics()" style="padding:6px 12px; font-size:0.8rem;">🔄</button>
+                    </div>
+                </div>
+                <div id="advancedAnalyticsContent" style="font-size:0.9rem; color:var(--text-main); line-height:1.5;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+                        <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px;">
+                            <div style="font-weight:600; color:var(--primary);">Produktivitäts-Score</div>
+                            <div style="font-size:1.5rem; font-weight:800; margin:4px 0;" id="productivityScore">--</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Basierend auf Arbeitszeiten & Effizienz</div>
+                        </div>
+                        <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px;">
+                            <div style="font-weight:600; color:var(--success);">Bester Tag</div>
+                            <div style="font-size:1.2rem; font-weight:800; margin:4px 0;" id="bestDay">--</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);" id="bestDayHours">--h gearbeitet</div>
+                        </div>
+                        <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px;">
+                            <div style="font-weight:600; color:var(--danger);">Schwächster Tag</div>
+                            <div style="font-size:1.2rem; font-weight:800; margin:4px 0;" id="worstDay">--</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);" id="worstDayHours">--h gearbeitet</div>
+                        </div>
+                        <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px;">
+                            <div style="font-weight:600; color:#f59e0b;">Ø Woche</div>
+                            <div style="font-size:1.2rem; font-weight:800; margin:4px 0;" id="avgWeek">--h</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Durchschnittliche Arbeitswoche</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:16px; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
+                        <div style="font-weight:600; margin-bottom:8px;">📊 Arbeitszeiten-Verteilung</div>
+                        <div id="workHoursDistribution" style="display:flex; flex-wrap:wrap; gap:8px; font-size:0.85rem;">
+                            <!-- Wird per JS gefüllt -->
+                        </div>
+            </div>
+            
         </div>
     </div>
 
@@ -4013,7 +4072,68 @@
         localStorage.setItem('tg_last_save', Date.now()); 
         console.log('✅ Daten gespeichert (inkl. IHK, Berufsschule, Ziele):', data.settings);
         checkAlertsThresholds();
+        checkOvertimeAlert();
         updateUI(); 
+    }
+
+    function checkOvertimeAlert() {
+        const workEntries = data.entries.filter(e => e.type === 'work' && e.worked > 0);
+        const thisWeek = workEntries.filter(e => {
+            const entryDate = new Date(e.date);
+            const now = new Date();
+            const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+            return entryDate >= weekStart;
+        });
+        const totalHours = thisWeek.reduce((sum, e) => sum + e.worked, 0);
+        const overtimeThreshold = data.settings.overtimeAlert || 40; // Default 40h
+
+        if (totalHours >= overtimeThreshold) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('⚠️ Überstunden-Alarm', {
+                    body: `Du hast diese Woche bereits ${totalHours.toFixed(1)}h gearbeitet. Überstunden-Threshold: ${overtimeThreshold}h`,
+                    icon: '/favicon.ico'
+                });
+            } else if ('Notification' in window && Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification('⚠️ Überstunden-Alarm', {
+                            body: `Du hast diese Woche bereits ${totalHours.toFixed(1)}h gearbeitet. Überstunden-Threshold: ${overtimeThreshold}h`,
+                            icon: '/favicon.ico'
+                        });
+                    }
+                });
+            }
+            // Fallback: In-App Message
+            showCustomMessage('⚠️ Überstunden', `Diese Woche: ${totalHours.toFixed(1)}h (Threshold: ${overtimeThreshold}h)`, 'warning');
+        }
+    }
+
+    function checkAchievements() {
+        const workEntries = data.entries.filter(e => e.type === 'work' && e.worked > 0);
+        const totalHours = workEntries.reduce((sum, e) => sum + e.worked, 0);
+        const achievements = data.achievements || [];
+
+        const milestones = [10, 50, 100, 500, 1000];
+        milestones.forEach(milestone => {
+            if (totalHours >= milestone && !achievements.includes(`total_${milestone}`)) {
+                achievements.push(`total_${milestone}`);
+                showCustomMessage('🏆 Achievement!', `Du hast ${milestone} Arbeitsstunden erreicht!`, 'success');
+            }
+        });
+
+        // Wöchentliche Meilensteine
+        const thisWeek = workEntries.filter(e => {
+            const entryDate = new Date(e.date);
+            const now = new Date();
+            const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+            return entryDate >= weekStart;
+        });
+        const weekHours = thisWeek.reduce((sum, e) => sum + e.worked, 0);
+        if (weekHours >= 40 && !achievements.includes('week_40')) {
+            achievements.push('week_40');
+            showCustomMessage('🏆 Wöchentliches Achievement!', '40h in einer Woche gearbeitet!', 'success');
+        }
+
     }
     
     // --- Trash Functions ---
@@ -5607,20 +5727,20 @@
 
         const saveTime = localStorage.getItem('tg_last_save');
         if (saveTime) {
-            document.getElementById('auditSaveValue').innerText = dateFormatter(parseInt(saveTime));
+            document.getElementById('auditSaveValueModal').innerText = dateFormatter(parseInt(saveTime));
         } else {
-            document.getElementById('auditSaveValue').innerText = 'Nie gespeichert';
-            document.getElementById('auditSave').classList.remove('success');
-            document.getElementById('auditSave').classList.add('danger');
+            document.getElementById('auditSaveValueModal').innerText = 'Nie gespeichert';
+            document.getElementById('auditSaveModal').classList.remove('success');
+            document.getElementById('auditSaveModal').classList.add('danger');
         }
 
         const holidayLog = localStorage.getItem('tg_last_holiday_check');
-        const holidayEl = document.getElementById('auditHoliday');
+        const holidayEl = document.getElementById('auditHolidayModal');
         if (holidayLog) {
             const log = JSON.parse(holidayLog);
             const nextDate = log.next ? new Date(log.next.date) : null;
             
-            document.getElementById('auditHolidayValue').innerText = nextDate 
+            document.getElementById('auditHolidayValueModal').innerText = nextDate 
                 ? `${log.next.name} (${nextDate.toLocaleDateString('de-DE')})` 
                 : `Check: ${dateFormatter(log.timestamp)}`;
 
@@ -5628,7 +5748,7 @@
             holidayEl.classList.add(log.count > 0 ? 'success' : 'warn');
 
         } else {
-            document.getElementById('auditHolidayValue').innerText = 'Erster Check steht aus';
+            document.getElementById('auditHolidayValueModal').innerText = 'Erster Check steht aus';
             holidayEl.classList.add('warn');
         }
 
@@ -5637,20 +5757,20 @@
             .filter(e => e.type === 'work' && e.worked > 0)
             .sort((a,b) => new Date(b.date) - new Date(a.date))[0];
         
-        const shiftEl = document.getElementById('auditShift');
+        const shiftEl = document.getElementById('auditShiftModal');
         shiftEl.classList.remove('warn', 'success', 'danger');
 
         if (lastWorkShift) {
             // Check: 10 Stunden Max-Arbeitszeit
             if (lastWorkShift.worked > 10.0) {
-                 document.getElementById('auditShiftValue').innerText = `${lastWorkShift.worked.toFixed(1)}h Überschreitung!`;
+                 document.getElementById('auditShiftValueModal').innerText = `${lastWorkShift.worked.toFixed(1)}h Überschreitung!`;
                  shiftEl.classList.add('danger');
             } else {
-                 document.getElementById('auditShiftValue').innerText = `Max: ${lastWorkShift.worked.toFixed(1)}h`;
+                 document.getElementById('auditShiftValueModal').innerText = `Max: ${lastWorkShift.worked.toFixed(1)}h`;
                  shiftEl.classList.add('success');
             }
         } else {
-            document.getElementById('auditShiftValue').innerText = 'Keine Schicht erfasst';
+            document.getElementById('auditShiftValueModal').innerText = 'Keine Schicht erfasst';
             shiftEl.classList.add('success');
         }
     }
@@ -10432,7 +10552,7 @@ TIPPS:
             errorUI.innerHTML = `
                 <div style="background: var(--bg-glass); border: 1px solid var(--danger); border-radius: var(--radius); padding: 2rem; margin: 2rem 0; text-align: center;">
                     <h2 style="color: var(--danger); margin-bottom: 1rem;">⚠️ Oops! Etwas ist schief gelaufen</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Die App hat einen Fehler entdeckt. Bitte versuche die Seite zu aktualisieren.</p>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Die App hat einen Fehler entdeckt. Bitte versuche die Seite zu aktualisieren. Oder Wende dich an den Support.</p>
                     <button onclick="location.reload()" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">🔄 Seite aktualisieren</button>
                 </div>
             `;
@@ -10488,6 +10608,22 @@ TIPPS:
         document.addEventListener('DOMContentLoaded', initializeApp);
     } else {
         initializeApp();
+    }
+
+    function updateAchievements() {
+        const achievements = data.achievements || [];
+        const display = document.getElementById('achievementsDisplay');
+        if (!display) return;
+
+        const achievementLabels = {
+            'total_10': '10h Total',
+            'total_50': '50h Total',
+            'total_100': '100h Total',
+            'total_500': '500h Total',
+            'total_1000': '1000h Total',
+            'week_40': '40h/Woche'
+        };
+
     }
 
 </script>
@@ -10745,6 +10881,258 @@ function closeMoreActionsModal() {
     document.getElementById('moreActionsModal').style.display = 'none';
 }
 
+let analyticsTimeFilter = 'month'; // 'week', 'month', 'year', 'all'
+
+function openAnalyticsModal() {
+    document.getElementById('analyticsModal').style.display = 'flex';
+    // Update the modal content with current data
+    updateAnalyticsModal();
+}
+
+function closeAnalyticsModal() {
+    document.getElementById('analyticsModal').style.display = 'none';
+}
+
+function setAnalyticsFilter(filter) {
+    analyticsTimeFilter = filter;
+    generateAdvancedAnalytics();
+}
+
+function exportAnalytics() {
+    const modal = document.getElementById('analyticsModal');
+    html2canvas(modal).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF();
+        pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+        pdf.save('TimeTracker-Analytics.pdf');
+        showCustomMessage('✅ Exportiert', 'Analytics als PDF gespeichert!', 'success');
+    });
+}
+
+function updateAnalyticsModal() {
+    // Audit values are already updated by renderAuditProtocol
+    // Always regenerate analytics on open
+    generateAdvancedAnalytics();
+}
+
+function generateAdvancedAnalytics() {
+    const contentEl = document.getElementById('advancedAnalyticsContent');
+    contentEl.innerHTML = '<p>Berechne Advanced Analytics... 🤖</p>';
+
+    setTimeout(() => {
+        const analytics = calculateAdvancedAnalytics(analyticsTimeFilter);
+
+        contentEl.innerHTML = `
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+                <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px;">
+                    <div style="font-weight:600; color:var(--primary);">Produktivitäts-Score</div>
+                    <div style="font-size:1.5rem; font-weight:800; margin:4px 0;" id="productivityScore">${analytics.productivityScore}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">Basierend auf Arbeitszeiten & Effizienz</div>
+                </div>
+                <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px;">
+                    <div style="font-weight:600; color:var(--success);">Bester Tag</div>
+                    <div style="font-size:1.2rem; font-weight:800; margin:4px 0;" id="bestDay">${analytics.bestDay.name}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);" id="bestDayHours">${analytics.bestDay.hours.toFixed(1)}h gearbeitet</div>
+                </div>
+                <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px;">
+                    <div style="font-weight:600; color:var(--danger);">Schwächster Tag</div>
+                    <div style="font-size:1.2rem; font-weight:800; margin:4px 0;" id="worstDay">${analytics.worstDay.name}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);" id="worstDayHours">${analytics.worstDay.hours.toFixed(1)}h gearbeitet</div>
+                </div>
+                <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px;">
+                    <div style="font-weight:600; color:#f59e0b;">Ø Woche</div>
+                    <div style="font-size:1.2rem; font-weight:800; margin:4px 0;" id="avgWeek">${analytics.avgWeek.toFixed(1)}h</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">Durchschnittliche Arbeitswoche</div>
+                </div>
+            </div>
+            <div style="margin-top:16px; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
+                <div style="font-weight:600; margin-bottom:8px;">📊 Arbeitszeiten-Verteilung</div>
+                <div id="workHoursDistribution" style="display:flex; flex-wrap:wrap; gap:8px; font-size:0.85rem;">
+                    ${analytics.distribution.map(day => 
+                        `<span style="background:${day.color}; color:white; padding:4px 8px; border-radius:4px; font-weight:500;">${day.name}: ${day.hours.toFixed(1)}h</span>`
+                    ).join('')}
+                </div>
+            </div>
+
+            <div style="margin-top:20px;">
+                <h5 style="margin-bottom:10px; color:var(--primary);">📈 Arbeitszeit-Trend (${analyticsTimeFilter === 'week' ? 'letzte Woche' : analyticsTimeFilter === 'month' ? 'letzter Monat' : analyticsTimeFilter === 'year' ? 'letztes Jahr' : 'alle Daten'})</h5>
+                <canvas id="trendChart" width="400" height="150" style="max-width:100%; height:auto;"></canvas>
+            </div>
+
+            <div style="margin-top:20px;">
+                <h5 style="margin-bottom:10px; color:var(--primary);">📊 Wochentag-Verteilung</h5>
+                <canvas id="distributionChart" width="400" height="150" style="max-width:100%; height:auto;"></canvas>
+            </div>
+        `;
+
+        // Initialize Charts
+        const initCharts = () => {
+            if (typeof Chart === 'undefined') {
+                setTimeout(initCharts, 100);
+                return;
+            }
+            // Trend Chart
+            const trendCtx = contentEl.querySelector('#trendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: analytics.trendData.labels,
+                    datasets: [{
+                        label: 'Arbeitsstunden',
+                        data: analytics.trendData.data,
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: 'var(--text-muted)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: 'var(--text-muted)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // Distribution Chart
+            const distCtx = contentEl.querySelector('#distributionChart').getContext('2d');
+            new Chart(distCtx, {
+                type: 'bar',
+                data: {
+                    labels: analytics.distribution.map(d => d.name),
+                    datasets: [{
+                        label: 'Durchschnittliche Stunden',
+                        data: analytics.distribution.map(d => d.hours),
+                        backgroundColor: analytics.distribution.map(d => d.color),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: 'var(--text-muted)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: 'var(--text-muted)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+        };
+        initCharts();
+    }, 1500); // Simuliere Berechnung
+}
+
+function calculateAdvancedAnalytics(filter = 'month') {
+    const now = new Date();
+    let startDate = null;
+    if (filter === 'week') {
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    } else if (filter === 'month') {
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+    } else if (filter === 'year') {
+        startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+    } // for 'all', startDate remains null
+
+    const workEntries = data.entries.filter(e => e.type === 'work' && e.worked > 0 && (!startDate || new Date(e.date) >= startDate));
+    if (workEntries.length === 0) {
+        return {
+            productivityScore: 'Keine Daten',
+            bestDay: { name: '--', hours: 0 },
+            worstDay: { name: '--', hours: 0 },
+            avgWeek: 0,
+            distribution: [],
+            trendData: { labels: [], data: [] }
+        };
+    }
+
+    // Arbeitszeiten pro Wochentag
+    const dayHours = [0, 0, 0, 0, 0, 0, 0]; // Mo-So
+    const dayCounts = [0, 0, 0, 0, 0, 0, 0];
+    const dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+
+    workEntries.forEach(e => {
+        const day = new Date(e.date).getDay(); // 0=So, 1=Mo, etc.
+        const adjustedDay = day === 0 ? 6 : day - 1; // 0=Mo, 1=Di, ..., 6=So
+        dayHours[adjustedDay] += e.worked;
+        dayCounts[adjustedDay]++;
+    });
+
+    // Durchschnitt pro Tag
+    const avgDayHours = dayHours.map((hours, i) => dayCounts[i] > 0 ? hours / dayCounts[i] : 0);
+
+    // Bester und schlechtester Tag
+    const maxIdx = avgDayHours.indexOf(Math.max(...avgDayHours));
+    const minIdx = avgDayHours.indexOf(Math.min(...avgDayHours));
+
+    // Produktivitäts-Score (basierend auf Konsistenz und Arbeitszeiten)
+    const avgWeek = avgDayHours.reduce((sum, h) => sum + h, 0);
+    const variance = avgDayHours.reduce((sum, h) => sum + Math.pow(h - avgWeek/7, 2), 0) / 7;
+    const consistency = Math.max(0, 100 - variance * 10); // Höhere Konsistenz = besser
+    const productivityScore = Math.round((avgWeek * 0.7 + consistency * 0.3));
+
+    // Verteilung für Anzeige
+    const distribution = dayNames.map((name, i) => ({
+        name,
+        hours: avgDayHours[i],
+        color: avgDayHours[i] > 8 ? 'var(--success)' : avgDayHours[i] > 4 ? 'var(--primary)' : 'var(--text-muted)'
+    }));
+
+    // Trend-Daten: Tägliche Arbeitszeiten über den Zeitraum
+    const trendLabels = [];
+    const trendData = [];
+    if (filter === 'all') {
+        // For 'all', monthly data over last 12 months
+        for (let i = 11; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthEntries = workEntries.filter(e => {
+                const eDate = new Date(e.date);
+                return eDate.getMonth() === date.getMonth() && eDate.getFullYear() === date.getFullYear();
+            });
+            const monthHours = monthEntries.reduce((sum, e) => sum + e.worked, 0);
+            trendLabels.push(date.toLocaleDateString('de-DE', { month: 'short', year: 'numeric' }));
+            trendData.push(monthHours);
+        }
+    } else {
+        const daysInPeriod = filter === 'week' ? 7 : filter === 'month' ? 30 : 365;
+        for (let i = daysInPeriod - 1; i >= 0; i--) {
+            const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+            const dateStr = date.toISOString().split('T')[0];
+            const dayEntries = workEntries.filter(e => e.date === dateStr);
+            const totalHours = dayEntries.reduce((sum, e) => sum + e.worked, 0);
+            trendLabels.push(date.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' }));
+            trendData.push(totalHours);
+        }
+    }
+
+    return {
+        productivityScore: productivityScore + '/100',
+        bestDay: { name: dayNames[maxIdx], hours: avgDayHours[maxIdx] },
+        worstDay: { name: dayNames[minIdx], hours: avgDayHours[minIdx] },
+        avgWeek,
+        distribution,
+        trendData: { labels: trendLabels, data: trendData }
+    };
+}
+
 // ============================================
 // MOOD TRACKER FEATURE (NEU: CRAZY!)
 // ============================================
@@ -10830,6 +11218,109 @@ function renderMoodOverview() {
     }
 
     moodContainer.innerHTML = html;
+}
+
+// ============================================
+// AI INSIGHTS FEATURE (NEU: CHEF-MÄSSIG!)
+// ============================================
+
+function generateInsights() {
+    const insightsEl = document.getElementById('insightsContentModal');
+    insightsEl.innerHTML = '<p>Analysiere Daten... 🤔</p>';
+
+    setTimeout(() => {
+        const insights = analyzeDataForInsights();
+        let html = '';
+
+        if (insights.length === 0) {
+            html = '<p>Keine Insights verfügbar. Mehr Daten sammeln!</p>';
+        } else {
+            html = insights.map(insight => `<div style="margin-bottom:12px; padding:8px; background:rgba(255,255,255,0.05); border-radius:6px;"><strong>${insight.icon}</strong> ${insight.text}</div>`).join('');
+        }
+
+        insightsEl.innerHTML = html;
+    }, 1000); // Simuliere Denkzeit
+}
+
+function analyzeDataForInsights() {
+    const insights = [];
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // Filter recent entries
+    const recentEntries = data.entries.filter(e => new Date(e.date) >= monthAgo);
+    const weekEntries = data.entries.filter(e => new Date(e.date) >= weekAgo);
+
+    if (recentEntries.length === 0) return insights;
+
+    // 1. Überstunden Check
+    const totalHours = recentEntries.reduce((sum, e) => sum + e.worked, 0);
+    const avgDaily = totalHours / 30;
+    if (avgDaily > 8) {
+        insights.push({
+            icon: '⚠️',
+            text: `Du arbeitest durchschnittlich ${avgDaily.toFixed(1)}h pro Tag. Überlege, Pausen einzulegen oder Urlaub zu planen.`
+        });
+    }
+
+    // 2. Stimmungs-Analyse
+    const moodEntries = recentEntries.filter(e => e.mood);
+    if (moodEntries.length > 5) {
+        const badMoods = moodEntries.filter(e => ['😞', '😠', '🤒', '😴', '🤯'].includes(e.mood)).length;
+        const moodRatio = badMoods / moodEntries.length;
+        if (moodRatio > 0.5) {
+            insights.push({
+                icon: '😟',
+                text: `Deine Stimmung war in ${Math.round(moodRatio * 100)}% der Fälle negativ. Vielleicht mehr Pausen oder Hobbys?`
+            });
+        }
+    }
+
+    // 3. Wochenend-Arbeit
+    const weekendEntries = weekEntries.filter(e => {
+        const day = new Date(e.date).getDay();
+        return day === 0 || day === 6;
+    });
+    if (weekendEntries.length > 2) {
+        insights.push({
+            icon: '🏖️',
+            text: `Du hast ${weekendEntries.length} Mal am Wochenende gearbeitet. Work-Life-Balance ist wichtig!`
+        });
+    }
+
+    // 4. Saldo-Trend
+    const recentDiffs = recentEntries.slice(-10).reduce((sum, e) => sum + e.diff, 0);
+    if (recentDiffs < -10) {
+        insights.push({
+            icon: '📉',
+            text: `Dein Saldo sinkt. Plane Überstunden oder korrigiere Einträge.`
+        });
+    } else if (recentDiffs > 10) {
+        insights.push({
+            icon: '📈',
+            text: `Super! Du baust Plusstunden auf. Belohne dich mit einer Pause.`
+        });
+    }
+
+    // 5. Max-Schichten
+    const longShifts = recentEntries.filter(e => e.shiftWarning);
+    if (longShifts.length > 0) {
+        insights.push({
+            icon: '⏰',
+            text: `Du hattest ${longShifts.length} Schichten über 10h. Achte auf Gesundheit!`
+        });
+    }
+
+    // Fallback, wenn keine Insights
+    if (insights.length === 0) {
+        insights.push({
+            icon: '✅',
+            text: 'Alles im grünen Bereich! Halte so weiter.'
+        });
+    }
+
+    return insights.slice(0, 3); // Max 3 Insights
 }
 
 function toggleBreakEnabled() {

@@ -10,9 +10,9 @@
 
 [![Timer Badge](https://img.shields.io/badge/Timer-live-yellow?style=for-the-badge)](#) [![Backup](https://img.shields.io/badge/Backup-JSON-orange?style=for-the-badge)](#)
 
-**Version:** `v2.1.3`  •  **Build:** `local`  •  **Stand:** 2025-12-14
+**Version:** `v2.2.1`  •  **Build:** `local`  •  **Stand:** 2025-12-15
  
- **Release:** `v2.1.1`  •  **Stand:** Dezember 2025
+ **Release:** `v2.2.1`  •  **Stand:** Dezember 2025
 
 ---
 
@@ -196,4 +196,4 @@ Vielen Dank — wenn du noch mehr grafische Elemente (Screenshots, GIFs, echte S
 
 ---
 
-**TimeTracker-Ausbildung-Arbeit V2.1.3** | Gebaut mit modernstem Web-Standard | 🚀 Production Ready
+**TimeTracker-Ausbildung-Arbeit V2.2.1** | Gebaut mit modernstem Web-Standard | 🚀 Production Ready
