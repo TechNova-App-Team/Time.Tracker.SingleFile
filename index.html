@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TimeTracker V2.1.3</title>
+<title>TimeTracker V2.1.6</title>
 <meta name="description" content="TimeTracker: Eine moderne, lokal laufende Single-File Zeiterfassungs-App. Kein Server, kein Cloud, nur deine Daten. Perfekt für Auszubildende und Mitarbeiter.">
 <meta name="theme-color" content="#a855f7">
 <meta name="author" content="TechNova App Team">
@@ -632,8 +632,9 @@
         }
         /* Dashboard Quick Actions */
         .quick-actions {
-            display: flex;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
             margin-top: -10px; /* An die KPI-Grid anrücken */
             margin-bottom: 2rem;
             padding: 0 0.5rem;
@@ -651,6 +652,37 @@
             color: var(--primary);
             border-color: var(--primary);
         }
+
+        /* Mood Selector */
+        .mood-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mood-btn:hover {
+            background: var(--primary-dim);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* Mood Display in Entries */
+        .mood-display {
+            font-size: 1.2em;
+            margin-left: 8px;
+            opacity: 0.8;
+        }
+        .mood-display[title*="glücklich"], .mood-display[title*="zufrieden"] { color: var(--success); }
+        .mood-display[title*="neutral"] { color: var(--text-muted); }
+        .mood-display[title*="unzufrieden"], .mood-display[title*="traurig"], .mood-display[title*="wütend"] { color: var(--danger); }
+        .mood-display[title*="krank"], .mood-display[title*="müde"], .mood-display[title*="überwältigt"] { color: #f59e0b; }
 
         /* --- MODAL --- */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
@@ -1848,9 +1880,9 @@
                 <div class="dashboard-item" data-item-id="quick-actions">
                     <div class="quick-actions">
                         <button onclick="openCorrection('month')">± Saldo korrigieren</button>
-                        <button onclick="openSettings()">⚙️ Einstellungen</button>
-                        <button onclick="checkAndBookHolidays()">🏖️ Feiertage prüfen</button>
                         <button onclick="openVacationModal()">🌴 Urlaub</button>
+                        <button onclick="checkAndBookHolidays()">🏖️ Feiertage prüfen</button>
+                        <button onclick="openMoreActionsModal()">⋯ Mehr Aktionen</button>
                     </div>
                 </div>
 
@@ -1989,6 +2021,7 @@
                             <input type="text" id="inpNotes" class="glass-input" placeholder="Notizen (z.B. Bugfix in Modul X)">
 
                             <div style="display:flex; gap:15px; margin-top:auto;">
+                                <button id="voiceBtn" class="btn btn-ghost" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); flex: 0 0 auto; padding: 10px 16px;" onclick="startVoiceInput()">🎤 Stimmeingabe</button>
                                 <button id="mainBtn" class="btn btn-primary" onclick="handleEntry()">Eintrag speichern</button>
                                 <button id="cancelBtn" class="btn" style="background:#222; display:none; flex:1;" onclick="resetEdit()">Abbrechen</button>
                             </div>
@@ -2141,6 +2174,21 @@
                      <div class="card audit-card" id="auditBreakMin">
                         <div class="audit-label">Pausen-Compliance (Letzte Schicht)</div>
                         <div class="audit-value" id="auditBreakMinValue">OK</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mood Overview -->
+            <div class="charts-row" style="grid-template-columns: 1fr;">
+                <div class="card">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Stimmungs-Übersicht</div>
+                            <div class="chart-sub">Deine Stimmung über die letzten 30 Tage</div>
+                        </div>
+                    </div>
+                    <div id="moodOverview" style="display:flex; flex-wrap:wrap; gap:8px; padding:1rem;">
+                        <!-- Mood entries will be filled by JS -->
                     </div>
                 </div>
             </div>
@@ -2826,6 +2874,21 @@
         </div>
 
     </main>
+
+    <!-- Focus Mode Overlay (NEU: KRASS MODERN!) -->
+    <div id="focusModeOverlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--bg-deep); z-index:9999; display:none; flex-direction:column; justify-content:center; align-items:center; color:var(--text-main); font-family:var(--font-main);">
+        <div style="text-align:center; max-width:600px; padding:2rem;">
+            <h1 style="font-size:3rem; margin-bottom:1rem; color:var(--primary);">🎯 FOKUS MODUS</h1>
+            <p id="focusQuote" style="font-size:1.5rem; margin-bottom:2rem; font-style:italic;">"Erfolg ist die Summe kleiner Anstrengungen, die Tag für Tag wiederholt werden."</p>
+            <div style="font-size:4rem; font-weight:800; margin-bottom:1rem; font-family:var(--font-mono);" id="focusTimer">25:00</div>
+            <div style="display:flex; gap:1rem; justify-content:center;">
+                <button id="focusStartBtn" class="btn btn-primary" onclick="startFocusTimer()">▶ Start</button>
+                <button id="focusPauseBtn" class="btn" style="background:#d97706;" onclick="pauseFocusTimer()" disabled>⏸️ Pause</button>
+                <button id="focusResetBtn" class="btn" onclick="resetFocusTimer()">🔄 Reset</button>
+                <button class="btn" style="background:#ef4444;" onclick="exitFocusMode()">❌ Exit</button>
+            </div>
+        </div>
+    </div>
 
     <!-- DSGVO/Privacy Modal -->
     <div class="modal" id="privacyModal" style="display:none;">
@@ -3567,6 +3630,71 @@
                     <button class="btn" onclick="trashBulkRestore()">Wiederherstellen (Markierte)</button>
                     <button class="btn btn-danger" onclick="trashBulkDeleteConfirm()">Löschen (Markierte)</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Break Settings Modal -->
+    <div class="modal" id="breakSettingsModal" style="display:none;">
+        <div class="modal-box" style="width:90%; max-width:400px; padding:24px; backdrop-filter:blur(20px); border-radius:16px; border:1px solid rgba(168, 85, 247, 0.3); position:relative;">
+            <h3 style="margin:0 0 20px 0; color:var(--primary);">🔔 Break Reminder Einstellungen</h3>
+            
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                    <input type="checkbox" id="breakEnabledCheckbox" onchange="toggleBreakEnabled()" />
+                    <span>Break Reminders aktivieren</span>
+                </label>
+                
+                <div>
+                    <label for="breakIntervalSlider" style="display:block; margin-bottom:8px;">Intervall: <span id="intervalValue">2</span> Stunden</label>
+                    <input type="range" id="breakIntervalSlider" min="1" max="4" value="2" step="0.5" style="width:100%;" oninput="updateIntervalDisplay()" disabled />
+                </div>
+                
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn" onclick="closeBreakSettingsModal()">Abbrechen</button>
+                    <button class="btn btn-primary" onclick="saveBreakSettings()">Speichern</button>
+                </div>
+            </div>
+            
+            <button class="modal-close-x" aria-label="Schließen" onclick="closeBreakSettingsModal()" title="Schließen">×</button>
+        </div>
+    </div>
+
+    <!-- More Actions Modal -->
+    <div class="modal" id="moreActionsModal" style="display:none;">
+        <div class="modal-box" style="width:90%; max-width:350px; padding:24px; backdrop-filter:blur(20px); border-radius:16px; border:1px solid rgba(168, 85, 247, 0.3); position:relative;">
+            <h3 style="margin:0 0 20px 0; color:var(--primary);">⋯ Weitere Aktionen</h3>
+            
+            <div style="display:grid; grid-template-columns: 1fr; gap:12px;">
+                <button class="btn btn-ghost" onclick="openSettings(); closeMoreActionsModal()">⚙️ Einstellungen</button>
+                <button class="btn btn-ghost" onclick="startFocusMode(); closeMoreActionsModal()">🎯 Focus Mode starten</button>
+                <button class="btn btn-ghost" onclick="openBreakSettingsModal(); closeMoreActionsModal()">🔔 Break Settings</button>
+            </div>
+            
+            <button class="modal-close-x" aria-label="Schließen" onclick="closeMoreActionsModal()" title="Schließen">×</button>
+        </div>
+    </div>
+
+    <!-- Mood Selector Modal -->
+    <div class="modal" id="moodSelectorModal" style="display:none;">
+        <div class="modal-box" style="width:90%; max-width:400px; padding:24px; backdrop-filter:blur(20px); border-radius:16px; border:1px solid rgba(168, 85, 247, 0.3); position:relative;">
+            <h4 style="margin:0 0 20px 0; color:var(--primary); text-align:center; font-size:1.1rem;">Wie war deine Stimmung nach diesem Eintrag?</h4>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); gap:12px; justify-items:center;">
+                <button class="mood-btn" onclick="setMood('😄')" title="Sehr glücklich">😄</button>
+                <button class="mood-btn" onclick="setMood('😊')" title="Glücklich">😊</button>
+                <button class="mood-btn" onclick="setMood('🙂')" title="Zufrieden">🙂</button>
+                <button class="mood-btn" onclick="setMood('😐')" title="Neutral">😐</button>
+                <button class="mood-btn" onclick="setMood('😕')" title="Unzufrieden">😕</button>
+                <button class="mood-btn" onclick="setMood('😞')" title="Traurig">😞</button>
+                <button class="mood-btn" onclick="setMood('😠')" title="Wütend">😠</button>
+                <button class="mood-btn" onclick="setMood('🤒')" title="Krank">🤒</button>
+                <button class="mood-btn" onclick="setMood('😴')" title="Müde">😴</button>
+                <button class="mood-btn" onclick="setMood('🤯')" title="Überwältigt">🤯</button>
+            </div>
+            
+            <div style="text-align:center; margin-top:20px;">
+                <button class="btn btn-ghost" onclick="skipMood()" style="font-size:0.9rem;">Überspringen</button>
             </div>
         </div>
     </div>
@@ -4892,7 +5020,8 @@
             shiftWarning: shiftWarning,
             project: project, // NEU: Projekt/Kunde
             timestamp: Date.now(), // P2P: Versionskontrolle für Smart Sync
-            breakLog: breakLog // NEU: Detailliertes Pausenlog
+            breakLog: breakLog, // NEU: Detailliertes Pausenlog
+            mood: '' // NEU: Mood Tracker
         };
 
         if(editId) {
@@ -4910,6 +5039,11 @@
         
         data.entries.sort((a,b) => new Date(b.date) - new Date(a.date));
         save();
+        
+        // NEU: Mood Selector nach Eintrag
+        if (!editId) { // Nur bei neuen Einträgen
+            openMoodSelector(entry.id);
+        }
         
         // Formularfelder leeren
         document.getElementById('inpStart').value = '';
@@ -6232,6 +6366,9 @@
         
         // 4. Statistiken rendern
         updatePrognoseStats(simulationPlan, currentTotalSaldo, cumulativeSaldo);
+
+        // 5. Mood Overview rendern
+        renderMoodOverview();
     }
     
     function getTypeColor(type) {
@@ -6551,7 +6688,7 @@ TIPPS:
             <div class="entry-row type-${e.type}">
                 <div>
                     <div class="entry-date">${new Date(e.date).toLocaleDateString('de-DE')}</div>
-                    <div class="entry-meta">${e.isPeriod ? e.label : e.info} (${e.worked.toFixed(2)}h) ${e.project ? `[${e.project}]` : ''} ${e.shiftWarning ? '<span style="color:var(--danger); font-weight:700;">⚠ MAX!</span>' : ''}</div>
+                    <div class="entry-meta">${e.isPeriod ? e.label : e.info} (${e.worked.toFixed(2)}h) ${e.project ? `[${e.project}]` : ''} ${e.shiftWarning ? '<span style="color:var(--danger); font-weight:700;">⚠ MAX!</span>' : ''} ${e.mood ? `<span class="mood-display" title="Stimmung: ${getMoodDescription(e.mood)}">${e.mood}</span>` : ''}</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:15px;">
                     <span class="tag">${e.type === 'school' ? 'SCHULE' : (e.type === 'holiday' ? 'FEIERTAG' : e.type.toUpperCase())}</span>
@@ -10376,5 +10513,395 @@ TIPPS:
             }
         } catch(e) { console.warn('Touch init failed', e); }
     })();
+
+// ============================================
+// VOICE INPUT FEATURE (NEU: RICHTIG MODERN!)
+// ============================================
+
+function startVoiceInput() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showCustomMessage('❌ Stimmeingabe nicht unterstützt', 'Dein Browser unterstützt keine Spracherkennung. Verwende Chrome oder Edge.', 'error');
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'de-DE'; // Deutsch
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = function() {
+        document.getElementById('voiceBtn').textContent = '🎤 Hört zu...';
+        document.getElementById('voiceBtn').style.background = 'rgba(239,68,68,0.2)';
+        document.getElementById('voiceBtn').style.borderColor = 'rgba(239,68,68,0.3)';
+        document.getElementById('voiceBtn').style.color = '#ef4444';
+        showCustomMessage('🎤 Stimmeingabe aktiv', 'Sprich deinen Eintrag (z.B. "Arbeit von 9 bis 17 Projekt Alpha")', 'info');
+    };
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript.toLowerCase();
+        parseVoiceCommand(transcript);
+    };
+
+    recognition.onerror = function(event) {
+        showCustomMessage('❌ Fehler bei Stimmeingabe', 'Versuche es nochmal oder gib manuell ein.', 'error');
+        resetVoiceBtn();
+    };
+
+    recognition.onend = function() {
+        resetVoiceBtn();
+    };
+
+    recognition.start();
+}
+
+function resetVoiceBtn() {
+    document.getElementById('voiceBtn').textContent = '🎤 Stimmeingabe';
+    document.getElementById('voiceBtn').style.background = 'rgba(59,130,246,0.2)';
+    document.getElementById('voiceBtn').style.borderColor = 'rgba(59,130,246,0.3)';
+    document.getElementById('voiceBtn').style.color = '#3b82f6';
+}
+
+function parseVoiceCommand(transcript) {
+    console.log('Voice transcript:', transcript);
+
+    // Beispiel Parsing: "arbeit von 9 bis 17 projekt alpha notizen bugfix"
+    let type = 'work';
+    let start = '';
+    let end = '';
+    let project = '';
+    let notes = '';
+
+    // Type erkennen
+    if (transcript.includes('schule') || transcript.includes('berufsschule')) {
+        type = 'school';
+    } else if (transcript.includes('urlaub') || transcript.includes('vacation')) {
+        type = 'vacation';
+    } else if (transcript.includes('krank')) {
+        type = 'sick';
+    }
+
+    // Zeiten extrahieren (einfach: suche nach Zahlen)
+    const timeRegex = /(\d{1,2})[:\.]?(\d{2})?/g;
+    const times = [];
+    let match;
+    while ((match = timeRegex.exec(transcript)) !== null) {
+        const hour = parseInt(match[1]);
+        const min = match[2] ? parseInt(match[2]) : 0;
+        times.push(`${hour.toString().padStart(2,'0')}:${min.toString().padStart(2,'0')}`);
+    }
+    if (times.length >= 2) {
+        start = times[0];
+        end = times[1];
+    }
+
+    // Projekt: nach "projekt" oder "kunde"
+    const projectMatch = transcript.match(/(?:projekt|kunde)\s+(.+?)(?:\s+notizen|$)/i);
+    if (projectMatch) {
+        project = projectMatch[1].trim();
+    }
+
+    // Notizen: nach "notizen"
+    const notesMatch = transcript.match(/notizen\s+(.+)/i);
+    if (notesMatch) {
+        notes = notesMatch[1].trim();
+    }
+
+    // Felder füllen
+    document.getElementById('inpType').value = type;
+    if (start) document.getElementById('inpStart').value = start;
+    if (end) document.getElementById('inpEnd').value = end;
+    if (project) document.getElementById('inpProject').value = project;
+    if (notes) document.getElementById('inpNotes').value = notes;
+
+    // Toggle time inputs if needed
+    toggleTimeInputs();
+
+    // Save draft
+    if (window.saveDraft) window.saveDraft();
+
+    showCustomMessage('✅ Stimmeingabe verarbeitet', `Typ: ${type}, Start: ${start}, Ende: ${end}, Projekt: ${project}`, 'success');
+}
+
+// ============================================
+// FOCUS MODE FEATURE (NEU: KRASS MODERN!)
+// ============================================
+
+let focusTimerInterval;
+let focusTimeLeft = 25 * 60; // 25 Minuten
+let focusRunning = false;
+
+const focusQuotes = [
+    "Erfolg ist die Summe kleiner Anstrengungen, die Tag für Tag wiederholt werden.",
+    "Disziplin ist der Brückenpfeiler zwischen Zielen und deren Verwirklichung.",
+    "Fokussierte Arbeit bringt Ergebnisse, Ablenkung bringt nur Ausreden.",
+    "Jeder Experte war einmal ein Anfänger. Bleib dran!",
+    "Zeit ist das wertvollste, was wir haben. Nutze sie weise.",
+    "Konzentration ist der Schlüssel zur Produktivität.",
+    "Ein Tag voller Fokus ist besser als eine Woche voller Chaos.",
+    "Deine Zukunft wird von dem geformt, was du heute tust.",
+    "Bleib hungrig, bleib fokussiert, bleib diszipliniert.",
+    "Jeder Moment zählt – nutze ihn für etwas Großes."
+];
+
+function startFocusMode() {
+    const overlay = document.getElementById('focusModeOverlay');
+    overlay.style.display = 'flex';
+    
+    // Zufälliges Zitat
+    const randomQuote = focusQuotes[Math.floor(Math.random() * focusQuotes.length)];
+    document.getElementById('focusQuote').textContent = `"${randomQuote}"`;
+    
+    // Vollbild versuchen
+    if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.warn('Vollbild nicht möglich:', err);
+        });
+    }
+    
+    updateFocusTimerDisplay();
+    showCustomMessage('🎯 Focus Mode aktiviert', '25-Minuten-Timer gestartet. Bleib fokussiert!', 'info');
+}
+
+function startFocusTimer() {
+    if (focusRunning) return;
+    focusRunning = true;
+    document.getElementById('focusStartBtn').disabled = true;
+    document.getElementById('focusPauseBtn').disabled = false;
+    
+    focusTimerInterval = setInterval(() => {
+        focusTimeLeft--;
+        updateFocusTimerDisplay();
+        
+        if (focusTimeLeft <= 0) {
+            clearInterval(focusTimerInterval);
+            focusRunning = false;
+            showCustomMessage('🎉 Focus Session beendet!', 'Gut gemacht! Nimm eine Pause.', 'success');
+            // Optional: Notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Focus Session beendet!', { body: 'Zeit für eine Pause!' });
+            }
+        }
+    }, 1000);
+}
+
+function pauseFocusTimer() {
+    clearInterval(focusTimerInterval);
+    focusRunning = false;
+    document.getElementById('focusStartBtn').disabled = false;
+    document.getElementById('focusPauseBtn').disabled = true;
+}
+
+function resetFocusTimer() {
+    clearInterval(focusTimerInterval);
+    focusRunning = false;
+    focusTimeLeft = 25 * 60;
+    updateFocusTimerDisplay();
+    document.getElementById('focusStartBtn').disabled = false;
+    document.getElementById('focusPauseBtn').disabled = true;
+}
+
+function updateFocusTimerDisplay() {
+    const minutes = Math.floor(focusTimeLeft / 60);
+    const seconds = focusTimeLeft % 60;
+    document.getElementById('focusTimer').textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+}
+
+function exitFocusMode() {
+    clearInterval(focusTimerInterval);
+    focusRunning = false;
+    document.getElementById('focusModeOverlay').style.display = 'none';
+    
+    // Vollbild beenden
+    if (document.exitFullscreen) {
+        document.exitFullscreen().catch(err => console.warn('Vollbild beenden fehlgeschlagen:', err));
+    }
+    
+    showCustomMessage('👋 Focus Mode beendet', 'Zurück zur normalen Ansicht.', 'info');
+}
+
+// ============================================
+// BREAK REMINDERS FEATURE (NEU: KRASS MODERN!)
+// ============================================
+
+let breakReminderInterval;
+let breakRemindersEnabled = false;
+let breakIntervalHours = 2;
+
+function openBreakSettingsModal() {
+    const modal = document.getElementById('breakSettingsModal');
+    modal.style.display = 'flex';
+    
+    // Load current settings
+    document.getElementById('breakEnabledCheckbox').checked = breakRemindersEnabled;
+    document.getElementById('breakIntervalSlider').value = breakIntervalHours;
+    updateIntervalDisplay();
+    toggleBreakEnabled(); // Enable/disable slider
+}
+
+function closeBreakSettingsModal() {
+    document.getElementById('breakSettingsModal').style.display = 'none';
+}
+
+function openMoreActionsModal() {
+    document.getElementById('moreActionsModal').style.display = 'flex';
+}
+
+function closeMoreActionsModal() {
+    document.getElementById('moreActionsModal').style.display = 'none';
+}
+
+// ============================================
+// MOOD TRACKER FEATURE (NEU: CRAZY!)
+// ============================================
+
+let currentMoodEntryId = null;
+
+function openMoodSelector(entryId) {
+    currentMoodEntryId = entryId;
+    document.getElementById('moodSelectorModal').style.display = 'flex';
+}
+
+function setMood(emoji) {
+    if (currentMoodEntryId) {
+        const entry = data.entries.find(e => e.id === currentMoodEntryId);
+        if (entry) {
+            entry.mood = emoji;
+            save();
+            showCustomMessage('✅ Stimmung gespeichert', `Deine Stimmung: ${emoji}`, 'success');
+        }
+    }
+    closeMoodSelector();
+}
+
+function skipMood() {
+    closeMoodSelector();
+}
+
+function closeMoodSelector() {
+    document.getElementById('moodSelectorModal').style.display = 'none';
+    currentMoodEntryId = null;
+}
+
+function getMoodDescription(emoji) {
+    const descriptions = {
+        '😄': 'Sehr glücklich',
+        '😊': 'Glücklich',
+        '🙂': 'Zufrieden',
+        '😐': 'Neutral',
+        '😕': 'Unzufrieden',
+        '😞': 'Traurig',
+        '😠': 'Wütend',
+        '🤒': 'Krank',
+        '😴': 'Müde',
+        '🤯': 'Überwältigt'
+    };
+    return descriptions[emoji] || 'Unbekannt';
+}
+
+function renderMoodOverview() {
+    const moodContainer = document.getElementById('moodOverview');
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Filter entries with mood from last 30 days
+    const recentEntries = data.entries.filter(e => e.mood && new Date(e.date) >= thirtyDaysAgo);
+
+    if (recentEntries.length === 0) {
+        moodContainer.innerHTML = '<div style="color:var(--text-muted); font-style:italic;">Noch keine Stimmungen erfasst. Speichere Einträge und wähle eine Stimmung!</div>';
+        return;
+    }
+
+    // Group by date
+    const moodByDate = {};
+    recentEntries.forEach(e => {
+        const date = e.date;
+        if (!moodByDate[date]) moodByDate[date] = [];
+        moodByDate[date].push(e.mood);
+    });
+
+    // Create HTML: Show last 30 days, with mood if available
+    let html = '';
+    for (let i = 29; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        const moods = moodByDate[dateStr] || [];
+        const avgMood = moods.length > 0 ? moods[Math.floor(moods.length / 2)] : null; // Median mood
+
+        html += `<div style="display:flex; flex-direction:column; align-items:center; padding:4px; border-radius:6px; background:${avgMood ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)'}; min-width:32px;">
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:2px;">${date.getDate()}</div>
+            <div style="font-size:1.2rem;">${avgMood || '–'}</div>
+        </div>`;
+    }
+
+    moodContainer.innerHTML = html;
+}
+
+function toggleBreakEnabled() {
+    const enabled = document.getElementById('breakEnabledCheckbox').checked;
+    document.getElementById('breakIntervalSlider').disabled = !enabled;
+}
+
+function updateIntervalDisplay() {
+    const value = document.getElementById('breakIntervalSlider').value;
+    document.getElementById('intervalValue').textContent = value;
+}
+
+function saveBreakSettings() {
+    const enabled = document.getElementById('breakEnabledCheckbox').checked;
+    const interval = parseFloat(document.getElementById('breakIntervalSlider').value);
+    
+    breakIntervalHours = interval;
+    localStorage.setItem('breakIntervalHours', interval.toString());
+    
+    if (enabled && !breakRemindersEnabled) {
+        enableBreakReminders();
+    } else if (!enabled && breakRemindersEnabled) {
+        disableBreakReminders();
+    } else if (enabled) {
+        // Restart with new interval
+        disableBreakReminders();
+        enableBreakReminders();
+    }
+    
+    closeBreakSettingsModal();
+    showCustomMessage('✅ Einstellungen gespeichert', `Break Reminders ${enabled ? 'aktiviert' : 'deaktiviert'} mit ${interval}h Intervall.`, 'success');
+}
+
+function enableBreakReminders() {
+    if (!('Notification' in window) || Notification.permission !== 'granted') {
+        showCustomMessage('❌ Notifications nicht erlaubt', 'Erlaube Notifications für Break Reminders.', 'error');
+        return;
+    }
+    
+    breakRemindersEnabled = true;
+    localStorage.setItem('breakRemindersEnabled', 'true');
+    
+    const intervalMs = breakIntervalHours * 60 * 60 * 1000;
+    breakReminderInterval = setInterval(() => {
+        if (document.hidden) {
+            new Notification('⏰ Zeit für eine Pause!', {
+                body: `Du arbeitest schon ${breakIntervalHours} Stunden durch. Steh auf, streck dich!`,
+                icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNhODU1ZjciLz4KPHBhdGggZD0iTTEyIDEySDE2VjE2SDEyVjEyWk0xNiAyMEgxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo='
+            });
+        }
+    }, intervalMs);
+}
+
+function disableBreakReminders() {
+    breakRemindersEnabled = false;
+    localStorage.setItem('breakRemindersEnabled', 'false');
+    clearInterval(breakReminderInterval);
+}
+
+// Load settings on init
+breakRemindersEnabled = localStorage.getItem('breakRemindersEnabled') === 'true';
+breakIntervalHours = parseFloat(localStorage.getItem('breakIntervalHours')) || 2;
+
+if (breakRemindersEnabled && Notification.permission === 'granted') {
+    enableBreakReminders();
+}
+
 </script>
 </body>
