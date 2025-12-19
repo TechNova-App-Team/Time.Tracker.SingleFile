@@ -813,49 +813,104 @@ ${diff > 0 ? '🚀 Du läufst besser als letztes Jahr!' : '⚠️ Achte auf dein
     // ===== ADVANCED: PERSONALIZED INSIGHTS =====
     generatePersonalizedInsights() {
         const weekly = this.analyzer.getWeeklyStats();
-        const productivity = this.analyzer.getProductivityTrends();
+        const monthly = this.analyzer.getMonthlyStats();
+        const trends = (this.analyzer.getTrendAnalysis && typeof this.analyzer.getTrendAnalysis === 'function') 
+            ? this.analyzer.getTrendAnalysis() 
+            : { trend: 'stable', average: 0 };
         const consistency = this.userProfile.consistency;
         const performance = this.userProfile.performanceLevel;
+        const entries = this.analyzer.data?.entries || [];
 
-        let insight = '💡 **PERSONALISIERTE EINSICHTEN**\n\n';
+        let insight = '💡 **DEINE PERSÖNLICHEN EINSICHTEN**\n\n';
 
-        // Consistency insight
+        // ===== ARBEITSVERHALTEN ANALYSE =====
+        if (entries.length > 0) {
+            // Berechne durchschnittliche tägliche Arbeit
+            const dailyAverage = entries.reduce((s, e) => s + (e.worked || 0), 0) / Math.max(entries.length, 1);
+            insight += `📊 **Deine durchschnittliche tägliche Leistung:** ${dailyAverage.toFixed(1)} Stunden\n`;
+            
+            // Bester Tag ermitteln
+            const bestDay = entries.reduce((prev, curr) => (curr.worked > prev.worked) ? curr : prev, entries[0] || {});
+            if (bestDay.worked) {
+                insight += `🏆 **Bester Tag:** ${bestDay.worked.toFixed(1)}h (${bestDay.date || 'kürzlich'})\n`;
+            }
+            insight += '\n';
+        }
+
+        // ===== WÖCHENTLICHE ANALYSE =====
+        if (weekly.worked) {
+            insight += `📈 **Diese Woche:** ${weekly.worked.toFixed(1)}h von ${weekly.expected.toFixed(1)}h erwartet\n`;
+            if (weekly.percentage) {
+                insight += `   → ${weekly.percentage.toFixed(0)}% deines Solls ✓\n`;
+            }
+            insight += '\n';
+        }
+
+        // ===== TREND ANALYSE =====
+        if (trends.trend) {
+            const trendEmoji = {
+                'improving': '📈',
+                'declining': '📉',
+                'stable': '➡️'
+            };
+            const trendText = {
+                'improving': 'Du wirst immer besser!',
+                'declining': 'Deine Performance sinkt - Zeit für Anpassungen!',
+                'stable': 'Du hältst dein Niveau konsistent'
+            };
+            insight += `${trendEmoji[trends.trend] || '➡️'} **Trend:** ${trendText[trends.trend] || 'Stabil'}\n`;
+            if (trends.average) {
+                insight += `   Durchschnitt: ${trends.average.toFixed(1)} Stunden\n`;
+            }
+            insight += '\n';
+        }
+
+        // ===== KONSISTENZ FEEDBACK =====
         if (consistency === 'VERY_HIGH') {
-            insight += '✅ **Konsistenz:** Dein Arbeitsrhythmus ist hervorragend! Du brauchst keine großen Anpassungen.\n\n';
+            insight += '✅ **Konsistenz Stark:** Dein Arbeitsrhythmus ist vorbildlich! Du brauchst kaum Anpassungen.\n';
+        } else if (consistency === 'HIGH') {
+            insight += '✨ **Gute Konsistenz:** Du hältst deine Routinen gut ein.\n';
+        } else if (consistency === 'MEDIUM') {
+            insight += '⚡ **Mittlere Konsistenz:** Es gibt einige Schwankungen. Versuche, regelmäßigere Muster zu etablieren.\n';
         } else if (consistency === 'LOW') {
-            insight += '⚠️ **Konsistenz:** Deine Arbeitszeiten schwanken stark. Versuche, regelmäßigere Muster zu etablieren.\n\n';
+            insight += '⚠️ **Schwache Konsistenz:** Deine Arbeitszeiten schwanken stark. Eine feste Routine würde helfen!\n';
         }
+        insight += '\n';
 
-        // Performance insight
-        if (performance === 'ELITE' || performance === 'EXCELLENT') {
-            insight += `🚀 **Performance:** Du machst einen ausgezeichneten Job! (${performance})\n\n`;
-        } else if (performance === 'NEEDS_IMPROVEMENT') {
-            insight += '📍 **Performance:** Es gibt Raum für Verbesserung. Konzentriere dich auf längere Fokus-Sessions.\n\n';
-        }
+        // ===== PERFORMANCE LEVEL =====
+        const perfIcons = {
+            'ELITE': '👑',
+            'EXCELLENT': '⭐',
+            'GOOD': '👍',
+            'AVERAGE': '➡️',
+            'NEEDS_IMPROVEMENT': '📍'
+        };
+        insight += `${perfIcons[performance] || '➡️'} **Performance Level:** ${performance}\n`;
+        insight += '\n';
 
-        // Risk assessment
-        if (parseFloat(weekly.diff) < -5) {
-            insight += '🚨 **Warnung:** Dein Saldo sinkt. Plane deine Stunden sorgfältiger.\n\n';
-        } else if (parseFloat(weekly.diff) > 10) {
-            insight += '🎉 **Glückwunsch:** Du schuldest dir selbst Freizeit! 😊\n\n';
-        }
-
-        // Growth potential
-        const growth = parseFloat(this.userProfile.growthPotential);
-        if (growth > 15) {
-            insight += `📈 **Wachstum:** Du steigerst dich um ${growth}% - Momentum halten!\n\n`;
-        }
-
-        // Recommendation
-        insight += '💪 **Nächste Schritte:**\n';
+        // ===== KONKRETE EMPFEHLUNGEN =====
+        insight += '💪 **Personalisierte Tipps für dich:**\n';
+        
         if (consistency === 'LOW') {
-            insight += '• Setze regelmäßige Arbeitszeiten fest\n';
+            insight += '• Setze feste Arbeitszeiten fest (z.B. täglich 09:00-17:00)\n';
         }
         if (performance === 'NEEDS_IMPROVEMENT') {
-            insight += '• Nutze Focus-Sessions (2-3 Stunden ohne Unterbrechung)\n';
+            insight += '• Nutze Fokus-Sessions: 2-3 Stunden ohne Unterbrechungen\n';
         }
-        insight += '• Überprüfe deine Ziele regelmäßig\n';
-        insight += '• Feierde deine Erfolge! 🎊';
+        if (parseFloat(weekly.diff) < -5) {
+            insight += `• Dein Saldo ist negativ (${weekly.diff.toFixed(1)}h). Plane nächste Woche intensiver!\n`;
+        } else if (parseFloat(weekly.diff) > 10) {
+            insight += `• Du schuldest dir ${weekly.diff.toFixed(1)}h Freizeit! Gönne dir eine Pause 😎\n`;
+        }
+        if (trends.trend === 'declining') {
+            insight += '• Deine Performance sinkt - überprüfe deine Prioritäten!\n';
+        }
+        if (trends.trend === 'improving') {
+            insight += '• Wunderbar! Du machst Fortschritte - Momentum halten!\n';
+        }
+        
+        insight += '• Überprüfe deine Ziele jede Woche\n';
+        insight += '• Feierer deine Erfolge! 🎉';
 
         return insight;
     }
