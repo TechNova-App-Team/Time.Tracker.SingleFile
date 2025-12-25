@@ -58,14 +58,14 @@
 <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script async src="https://plausible.io/js/pa-jiUWAYasLo3v5kIOac5C3.js"></script>
 
-<!-- Supabase JavaScript Client -->
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase JavaScript Client (MUSS zuerst laden!) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Supabase Integration -->
+<!-- Supabase Integration (NACH Supabase JS) -->
 <script defer src="./AI-Bot/supabase-integration.js"></script>
 <script defer src="./AI-Bot/supabase-ui.js"></script>
 
-<!-- Deine Config -->
+<!-- Deine Config (ZULETZT) -->
 <script defer src="./supabase-config.js"></script>
 <script>
   window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
@@ -3607,6 +3607,7 @@
                 <button class="settings-tab" onclick="switchSettingsTab('shortcuts')" style="padding:10px 15px; border:none; background:none; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; transition:0.2s;">⌨️ Shortcuts</button>
                 <button class="settings-tab" onclick="switchSettingsTab('team')" style="padding:10px 15px; border:none; background:none; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; transition:0.2s;">🤝 Team</button>
                 <button class="settings-tab" onclick="switchSettingsTab('graphics')" style="padding:10px 15px; border:none; background:none; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; transition:0.2s;">🎨 Grafiken</button>
+                <button class="settings-tab" onclick="switchSettingsTab('cloud')" style="padding:10px 15px; border:none; background:none; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; transition:0.2s;">☁️ Cloud Sync</button>
             </div>
             
             <!-- Content Area mit Scroll -->
@@ -4083,12 +4084,51 @@
                     </div>
                 </div>
                 
-            </div>
-            
-            <!-- Footer mit Save Button -->
-            <div style="padding:1.5rem 2rem; border-top:1px solid var(--border); flex-shrink:0; display:flex; gap:10px; justify-content:flex-end;">
-                <button class="btn" style="background:transparent; border:1px solid var(--border); padding:10px 20px;" onclick="closeSettings()">Abbrechen</button>
-                <button class="btn btn-primary" onclick="saveSettings()" style="padding:10px 30px;">💾 Speichern</button>
+                <!-- Tab: Cloud Sync -->
+                <div id="settings-tab-cloud" class="settings-tab-content" style="display:none;">
+                    <h4 style="color:var(--primary); margin-bottom:15px; font-size:1rem;">☁️ Cloud Synchronisation</h4>
+                    
+                    <div style="background:rgba(168, 85, 247, 0.08); border:1px solid rgba(168, 85, 247, 0.2); border-radius:12px; padding:1.5rem; margin-bottom:2rem;">
+                        <p style="color:var(--text-main); margin:0; line-height:1.6;">
+                            Synchronisiere deine Arbeitszeiten mit Supabase Cloud. Deine Daten sind sicher verschlüsselt und jederzeit verfügbar.
+                        </p>
+                    </div>
+                    
+                    <!-- Cloud Status -->
+                    <div style="background:var(--bg-glass); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:2rem;">
+                        <h5 style="color:var(--text-main); margin:0 0 1rem 0; font-size:0.95rem;">📊 Status</h5>
+                        <div id="cloudSyncStatus" style="color:var(--text-muted); font-size:0.9rem; line-height:1.8;">
+                            <p>Wird geladen...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Cloud Buttons -->
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <button id="cloudSyncLoginBtn" class="btn btn-primary" style="width:100%; padding:12px; background:linear-gradient(135deg, #667eea, #764ba2); display:none;" onclick="openCloudLoginModal()">
+                            ☁️ Cloud Login
+                        </button>
+                        
+                        <button id="cloudSyncLogoutBtn" class="btn" style="width:100%; padding:12px; background:transparent; border:1px solid rgba(168, 85, 247, 0.3); color:var(--text-muted); display:none;" onclick="handleCloudLogout()">
+                            🚪 Logout
+                        </button>
+                        
+                        <button id="cloudSyncUploadBtn" class="btn" style="width:100%; padding:12px; background:transparent; border:1px solid rgba(168, 85, 247, 0.3); color:var(--text-muted); opacity:0.5;" disabled onclick="handleCloudUpload()">
+                            ⬆️ In Cloud hochladen
+                        </button>
+                        
+                        <button id="cloudSyncDownloadBtn" class="btn" style="width:100%; padding:12px; background:transparent; border:1px solid rgba(168, 85, 247, 0.3); color:var(--text-muted); opacity:0.5;" disabled onclick="handleCloudDownload()">
+                            ⬇️ Von Cloud wiederherstellen
+                        </button>
+                    </div>
+                    
+                    <!-- Info Box -->
+                    <div style="background:rgba(59, 130, 246, 0.1); border:1px solid rgba(59, 130, 246, 0.2); border-radius:12px; padding:1.5rem; margin-top:2rem;">
+                        <p style="color:var(--text-main); margin:0; font-size:0.9rem; line-height:1.6;">
+                            <strong>ℹ️ Info:</strong> Deine Arbeitszeiten werden automatisch synchronisiert, wenn du angemeldet bist. Du kannst jederzeit manuell sync oder restore klicken.
+                        </p>
+                    </div>
+                </div>
+                
             </div>
             
         </div>
@@ -16242,81 +16282,49 @@ TIPPS:
     }
     
     function updateCloudSyncUI(isLoggedIn, user) {
-        // Finde oder erstelle Cloud Sync Buttons im Header
-        let syncButton = document.querySelector('[data-cloud-sync-button]');
-        let syncContainer = document.querySelector('[data-cloud-sync-container]');
+        // Update Cloud Sync Buttons in Settings
+        const loginBtn = document.getElementById('cloudSyncLoginBtn');
+        const logoutBtn = document.getElementById('cloudSyncLogoutBtn');
+        const uploadBtn = document.getElementById('cloudSyncUploadBtn');
+        const downloadBtn = document.getElementById('cloudSyncDownloadBtn');
+        const statusDiv = document.getElementById('cloudSyncStatus');
         
-        if (!syncButton && !syncContainer) {
-            // Falls nicht existent, erstelle sie im Header
-            createCloudSyncButtons();
-        } else {
-            // Update bestehende Buttons
-            if (isLoggedIn) {
-                document.querySelectorAll('[data-cloud-sync-login-btn]').forEach(btn => btn.style.display = 'none');
-                document.querySelectorAll('[data-cloud-sync-logout-btn]').forEach(btn => btn.style.display = 'block');
-                document.querySelectorAll('[data-cloud-user-email]').forEach(el => el.textContent = user.email);
-                document.querySelectorAll('[data-cloud-sync-upload-btn]').forEach(btn => btn.disabled = false);
-                document.querySelectorAll('[data-cloud-sync-download-btn]').forEach(btn => btn.disabled = false);
-                console.log('[Cloud Sync] User angemeldet:', user.email);
-            } else {
-                document.querySelectorAll('[data-cloud-sync-login-btn]').forEach(btn => btn.style.display = 'block');
-                document.querySelectorAll('[data-cloud-sync-logout-btn]').forEach(btn => btn.style.display = 'none');
-                document.querySelectorAll('[data-cloud-sync-upload-btn]').forEach(btn => btn.disabled = true);
-                document.querySelectorAll('[data-cloud-sync-download-btn]').forEach(btn => btn.disabled = true);
-                console.log('[Cloud Sync] User abgemeldet');
+        if (isLoggedIn && user) {
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = 'block';
+            if (uploadBtn) {
+                uploadBtn.disabled = false;
+                uploadBtn.style.opacity = '1';
             }
+            if (downloadBtn) {
+                downloadBtn.disabled = false;
+                downloadBtn.style.opacity = '1';
+            }
+            if (statusDiv) {
+                statusDiv.innerHTML = `<p>🟢 <strong>Angemeldet als:</strong> ${user.email}</p><p style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;">Deine Daten werden automatisch synchronisiert.</p>`;
+            }
+            console.log('[Cloud Sync] User angemeldet:', user.email);
+        } else {
+            if (loginBtn) loginBtn.style.display = 'block';
+            if (logoutBtn) logoutBtn.style.display = 'none';
+            if (uploadBtn) {
+                uploadBtn.disabled = true;
+                uploadBtn.style.opacity = '0.5';
+            }
+            if (downloadBtn) {
+                downloadBtn.disabled = true;
+                downloadBtn.style.opacity = '0.5';
+            }
+            if (statusDiv) {
+                statusDiv.innerHTML = `<p>🔴 <strong>Nicht angemeldet</strong></p><p style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;">Klick auf "Cloud Login" um dich anzumelden.</p>`;
+            }
+            console.log('[Cloud Sync] User abgemeldet');
         }
     }
     
     function createCloudSyncButtons() {
-        // Erstelle Cloud Sync Buttons als Fixed Element (oben rechts)
-        const cloudSyncHTML = `
-            <div data-cloud-sync-container style="position: fixed; top: 16px; right: 16px; z-index: 1000; display: flex; gap: 8px; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, rgba(22, 22, 26, 0.95), rgba(30, 30, 35, 0.9)); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 12px; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
-                
-                <!-- Cloud Sync Status (wenn angemeldet) -->
-                <div style="display: none; align-items: center; gap: 8px; padding-right: 8px; border-right: 1px solid rgba(255,255,255,0.1);" data-cloud-sync-status>
-                    <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></span>
-                    <span style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">
-                        <span data-cloud-user-email style="color: var(--primary);">--</span>
-                    </span>
-                </div>
-                
-                <!-- Login Button -->
-                <button data-cloud-sync-login-btn class="cloud-sync-btn" style="padding: 8px 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap;">
-                    ☁️ Cloud Login
-                </button>
-                
-                <!-- Logout Button (versteckt) -->
-                <button data-cloud-sync-logout-btn class="cloud-sync-btn" style="display: none; padding: 8px 14px; background: transparent; color: var(--text-muted); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.3s; white-space: nowrap;" title="Von Cloud abmelden">
-                    🚪 Logout
-                </button>
-                
-                <!-- Upload Button (syncs mit Cloud) -->
-                <button data-cloud-sync-upload-btn class="cloud-sync-btn" disabled style="padding: 8px 14px; background: transparent; color: var(--text-muted); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.3s; opacity: 0.5; white-space: nowrap;" title="Alle Daten in die Cloud hochladen">
-                    ⬆️ Sync
-                </button>
-                
-                <!-- Download Button -->
-                <button data-cloud-sync-download-btn class="cloud-sync-btn" disabled style="padding: 8px 14px; background: transparent; color: var(--text-muted); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.3s; opacity: 0.5; white-space: nowrap;" title="Daten von der Cloud herunterladen">
-                    ⬇️ Restore
-                </button>
-            </div>
-        `;
-        
-        // Injiziere ins DOM
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = cloudSyncHTML;
-        const syncContainer = tempDiv.querySelector('[data-cloud-sync-container]');
-        
-        document.body.appendChild(syncContainer);
-        
-        // Binding der Event-Listener
-        syncContainer.querySelector('[data-cloud-sync-login-btn]').addEventListener('click', openCloudLoginModal);
-        syncContainer.querySelector('[data-cloud-sync-logout-btn]').addEventListener('click', handleCloudLogout);
-        syncContainer.querySelector('[data-cloud-sync-upload-btn]').addEventListener('click', handleCloudUpload);
-        syncContainer.querySelector('[data-cloud-sync-download-btn]').addEventListener('click', handleCloudDownload);
-        
-        console.log('[Cloud Sync] 🎯 Buttons ins DOM injiziert (oben rechts)');
+        // Cloud Sync Buttons sind jetzt FEST im Settings Modal (nicht mehr dynamisch injiziert)
+        console.log('[Cloud Sync] ✅ Buttons sind im Settings Modal verfügbar (nicht mehr dynamisch)');
     }
     
     function openCloudLoginModal() {

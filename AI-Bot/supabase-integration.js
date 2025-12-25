@@ -172,16 +172,16 @@ class SupabaseCloudSync {
 
             console.log('[Cloud] Hochladen von', Object.keys(allData).length, 'LocalStorage-Keys');
 
-            // Upsert in Supabase (case = User ID, all_data = JSONB Objekt)
+            // Upsert in Supabase (id = User ID, all_data = JSONB Objekt)
             const { data, error } = await this.client
                 .from('Users')
                 .upsert(
                     {
-                        case: this.user.id,
+                        id: this.user.id,
                         all_data: allData,
                         updated_at: new Date().toISOString()
                     },
-                    { onConflict: 'case' }
+                    { onConflict: 'id' }
                 )
                 .select();
 
@@ -219,7 +219,7 @@ class SupabaseCloudSync {
             const { data, error } = await this.client
                 .from('Users')
                 .select('all_data')
-                .eq('case', this.user.id)
+                .eq('id', this.user.id)
                 .single();
 
             if (error && error.code !== 'PGRST116') {
