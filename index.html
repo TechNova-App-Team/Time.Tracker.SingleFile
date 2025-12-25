@@ -5229,7 +5229,33 @@
     }
 
 
+    function cleanupLocalStorage() {
+        // Lösche alte tt_export_reminder_shown_* Keys - behalte nur den heutigen
+        const today = new Date().toISOString().split('T')[0];
+        const currentKey = 'tt_export_reminder_shown_' + today;
+        
+        let deletedCount = 0;
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('tt_export_reminder_shown_') && key !== currentKey) {
+                localStorage.removeItem(key);
+                deletedCount++;
+            }
+        }
+        
+        if (deletedCount > 0) {
+            console.log(`🧹 Cleaned up ${deletedCount} alte Export-Reminder Keys`);
+        }
+    }
+
     function save() { 
+        // Cleanup alte LocalStorage Keys
+        try {
+            cleanupLocalStorage();
+        } catch (e) {
+            console.warn('⚠️ LocalStorage Cleanup fehlgeschlagen:', e);
+        }
+
         try {
             // Backup snapshot (keep last 10) - lightweight safety net for debugging
             const backupsStr = localStorage.getItem('tg_pro_data_backups');
@@ -16368,17 +16394,22 @@ TIPPS:
     }
     
     async function handleCloudUpload() {
-        const uploadBtn = document.querySelector('[data-cloud-sync-upload-btn]');
-        if (!uploadBtn || !window.cloudSync) return;
+        const uploadBtn = document.getElementById('cloudSyncUploadBtn');
+        if (!uploadBtn || !window.cloudSync) {
+            console.warn('[Upload] Button oder cloudSync nicht verfügbar');
+            return;
+        }
         
         const originalText = uploadBtn.textContent;
         uploadBtn.disabled = true;
         uploadBtn.textContent = '⏳ Lädt...';
         
         try {
+            console.log('[Upload] Starte Upload...');
             await window.cloudSync.uploadToCloud();
             showCustomMessage('✅ Hochgeladen', 'Deine Daten wurden erfolgreich in die Cloud synchronisiert!', 'success');
         } catch (error) {
+            console.error('[Upload] Fehler:', error);
             showCustomMessage('❌ Upload Fehler', error.message, 'error');
         } finally {
             uploadBtn.disabled = false;
@@ -16387,19 +16418,24 @@ TIPPS:
     }
     
     async function handleCloudDownload() {
-        const downloadBtn = document.querySelector('[data-cloud-sync-download-btn]');
-        if (!downloadBtn || !window.cloudSync) return;
+        const downloadBtn = document.getElementById('cloudSyncDownloadBtn');
+        if (!downloadBtn || !window.cloudSync) {
+            console.warn('[Download] Button oder cloudSync nicht verfügbar');
+            return;
+        }
         
         const originalText = downloadBtn.textContent;
         downloadBtn.disabled = true;
         downloadBtn.textContent = '⏳ Lädt...';
         
         try {
+            console.log('[Download] Starte Download...');
             const result = await window.cloudSync.downloadFromCloud();
             showCustomMessage('✅ Restored', `${result.itemsLoaded} Einträge von der Cloud geladen!`, 'success');
             // Reload der Seite um neue Daten anzuzeigen
             setTimeout(() => location.reload(), 1500);
         } catch (error) {
+            console.error('[Download] Fehler:', error);
             showCustomMessage('❌ Download Fehler', error.message, 'error');
         } finally {
             downloadBtn.disabled = false;
