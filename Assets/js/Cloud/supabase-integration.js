@@ -174,7 +174,7 @@ class SupabaseCloudSync {
 
             // Upsert in Supabase (id = User ID, all_data = JSONB Objekt)
             const { data, error } = await this.client
-                .from('Users')
+                .from('users')
                 .upsert(
                     {
                         id: this.user.id,
@@ -217,7 +217,7 @@ class SupabaseCloudSync {
 
             // Hole Daten für den aktuellen User
             const { data, error } = await this.client
-                .from('Users')
+                .from('users')
                 .select('all_data')
                 .eq('id', this.user.id)
                 .single();
