@@ -1,8 +1,8 @@
 // ===== SERVICE WORKER FOR PWA =====
 // Cache-First Strategy für Assets, Network-First für API/Data
 
-const CACHE_NAME = 'timetracker-v1';
-const RUNTIME_CACHE = 'timetracker-runtime-v1';
+const CACHE_NAME = 'timetracker-v10';
+const RUNTIME_CACHE = 'timetracker-runtime-v10';
 const OFFLINE_PAGE = './Pages/Info/offline.html';
 
 const ASSETS_TO_CACHE = [
