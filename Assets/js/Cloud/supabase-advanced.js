@@ -1,9 +1,3 @@
-/**
- * Supabase Cloud Sync - Advanced Usage Beispiele
- * 
- * Dieses Dokument zeigt fortgeschrittene Implementierungen und Custom-Logik
- */
-
 // ============================================================================
 // 1. CUSTOM SYNCHRONISIERUNGS-LOGIK
 // ============================================================================

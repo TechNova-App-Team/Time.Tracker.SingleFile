@@ -62,8 +62,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- Supabase Integration (NACH Supabase JS) -->
-<script defer src="./AI-Bot/supabase-integration.js"></script>
-<script defer src="./AI-Bot/supabase-ui.js"></script>
+<script defer src="./Assets/js/Cloud/supabase-integration.js"></script>
+<script defer src="./Assets/js/Cloud/supabase-ui.js"></script>
 
 <!-- Deine Config (ZULETZT) -->
 <script defer src="./supabase-config.js"></script>
@@ -16245,18 +16245,23 @@ TIPPS:
         const waitForCloudSync = setInterval(() => {
             if (window.cloudSync) {
                 clearInterval(waitForCloudSync);
-                window.cloudSyncUI = new SupabaseCloudSyncUI(window.cloudSync);
-                console.log('[App] ✅ Cloud Sync UI erfolgreich aktiviert!');
-                
-                // Integriere Cloud Sync in die bestehende App
-                setupCloudSyncIntegration();
+                try {
+                    window.cloudSyncUI = new SupabaseCloudSyncUI(window.cloudSync);
+                    console.log('[App] ✅ Cloud Sync UI erfolgreich aktiviert!');
+                    setupCloudSyncIntegration();
+                } catch (err) {
+                    console.warn('[App] ⚠️ Cloud Sync UI Init Fehler:', err.message);
+                    // Trotzdem Cloud Sync Integration versuchen
+                    setupCloudSyncIntegration();
+                }
             }
         }, 100);
         
-        // Timeout nach 5s
+        // Timeout nach 5s - KEIN FEHLER, nur silent fail
         setTimeout(() => {
-            if (!window.cloudSyncUI) {
-                console.warn('[App] ⚠️ Cloud Sync UI konnte nicht initialisiert werden. Prüfe die Supabase Config!');
+            if (!window.cloudSync) {
+                console.log('[App] ℹ️ Cloud Sync nicht verfügbar (supabase-config.js nicht geladen?)');
+                clearInterval(waitForCloudSync);
             }
         }, 5000);
     });

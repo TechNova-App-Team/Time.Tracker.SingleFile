@@ -48,6 +48,7 @@ junit.xml
 # yarn.lock
 
 # Test files and directories
+
 tests/
 TESTING.md
 *.test.js

@@ -1,15 +1,3 @@
-/**
- * SUPABASE KONFIGURATION
- * 
- * WICHTIG: Diese Datei enthält sensible Credentials!
- * 
- * Schritte:
- * 1. Kopiere diese Datei in den Namen "supabase-config.js" (ohne .example)
- * 2. Ersetze DEINE_ANON_KEY mit deinem echten Anon Key von Supabase
- * 3. Füge supabase-config.js zu .gitignore hinzu (nicht in GitHub hochladen!)
- * 4. Lade die Datei NACH dem Supabase CDN Script: <script src="supabase-config.js"></script>
- */
-
 // Supabase Konfiguration
 const SUPABASE_CONFIG = {
     URL: 'https://fouucibowmukxvweratn.supabase.co',
