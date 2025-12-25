@@ -220,12 +220,14 @@ class SupabaseCloudSync {
                 .from('users')
                 .select('all_data')
                 .eq('id', this.user.id)
-                .single();
+                .maybeSingle();  // Nutze maybeSingle statt single für bessere Error-Handling
 
-            if (error && error.code !== 'PGRST116') {
-                // PGRST116 = no rows found (normal bei neuem User)
-                console.error('[Cloud] Download Fehler:', error);
-                throw error;
+            if (error) {
+                // Nur bei echtem Fehler werfen (PGRST116 = no rows ist ok)
+                if (error.code !== 'PGRST116') {
+                    console.error('[Cloud] Download Fehler:', error);
+                    throw error;
+                }
             }
 
             if (data && data.all_data) {
