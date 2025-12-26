@@ -5346,7 +5346,14 @@
         }
 
         if (!localStorage.getItem('privacy_acknowledged')) {
-            showPrivacyModal();
+            // Nur auf Desktop anzeigen, nicht auf Mobile
+            const isMobile = window.innerWidth < 768;
+            if (!isMobile) {
+                showPrivacyModal();
+            } else {
+                // Auf Mobile direkt als acknowledged markieren
+                localStorage.setItem('privacy_acknowledged', 'true');
+            }
         }
 
         // Run post-load initializations that previously ran at parse time
