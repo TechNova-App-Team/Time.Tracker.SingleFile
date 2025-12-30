@@ -54,5 +54,5 @@ TESTING.md
 *.test.js
 jest.config.js
 
-
+.claude/
 supabase-config.js 

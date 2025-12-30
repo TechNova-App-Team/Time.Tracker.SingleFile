@@ -2360,8 +2360,679 @@
 </head>
 <body>
 
-    <!-- MOBILE DISCLAIMER BANNER -->
-    <div id="mobileDisclaimerBanner" style="position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 16px 20px; z-index: 1000; text-align: center; box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3); display: none;">
+<!-- PROFESSIONAL ENTERPRISE-GRADE INTRO -->
+<div id="pro-intro" style="display: none;">
+    <canvas id="gradient-canvas"></canvas>
+
+    <div class="intro-container">
+        <!-- Scene 1: Brand Reveal -->
+        <div class="intro-scene active" data-scene="1">
+            <div class="scene-content">
+                <div class="logo-reveal">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                        <defs>
+                            <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#a855f7"/>
+                                <stop offset="100%" stop-color="#ec4899"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="60" cy="60" r="50" stroke="url(#brandGradient)" stroke-width="2"
+                                fill="none" class="logo-ring" opacity="0.3"/>
+                        <circle cx="60" cy="60" r="45" stroke="url(#brandGradient)" stroke-width="3"
+                                fill="none" class="logo-circle"/>
+                        <path d="M 35 60 L 50 75 L 85 40" stroke="url(#brandGradient)" stroke-width="5"
+                              fill="none" stroke-linecap="round" class="logo-check"/>
+                    </svg>
+                </div>
+                <h1 class="brand-title">MyWorkLog</h1>
+                <p class="brand-subtitle">Zeiterfassung neu definiert</p>
+            </div>
+        </div>
+
+        <!-- Scene 2: Features -->
+        <div class="intro-scene" data-scene="2">
+            <div class="scene-content">
+                <div class="feature-grid">
+                    <div class="feature-item" style="--delay: 0s">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <h3>Präzise Zeiterfassung</h3>
+                        <p>Erfasse jede Minute mit höchster Genauigkeit</p>
+                    </div>
+                    <div class="feature-item" style="--delay: 0.1s">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                <line x1="12" y1="22.08" x2="12" y2="12"/>
+                            </svg>
+                        </div>
+                        <h3>Detaillierte Analytics</h3>
+                        <p>Insights die deine Produktivität steigern</p>
+                    </div>
+                    <div class="feature-item" style="--delay: 0.2s">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M2 12h20"/>
+                                <circle cx="12" cy="12" r="4"/>
+                            </svg>
+                        </div>
+                        <h3>KI-gestützt</h3>
+                        <p>Intelligente Vorschläge & Automatisierung</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 3: Visual Showcase -->
+        <div class="intro-scene" data-scene="3">
+            <div class="scene-content">
+                <div class="visual-showcase">
+                    <div class="mock-dashboard">
+                        <div class="dashboard-header">
+                            <div class="dash-dot"></div>
+                            <div class="dash-dot"></div>
+                            <div class="dash-dot"></div>
+                        </div>
+                        <div class="dashboard-body">
+                            <div class="dash-stat">
+                                <div class="stat-label">Heute</div>
+                                <div class="stat-value">8.5h</div>
+                                <div class="stat-bar" style="--width: 85%"></div>
+                            </div>
+                            <div class="dash-stat">
+                                <div class="stat-label">Woche</div>
+                                <div class="stat-value">42h</div>
+                                <div class="stat-bar" style="--width: 95%"></div>
+                            </div>
+                            <div class="dash-stat">
+                                <div class="stat-label">Monat</div>
+                                <div class="stat-value">168h</div>
+                                <div class="stat-bar" style="--width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="showcase-title">Alles auf einen Blick</h2>
+                <p class="showcase-subtitle">Dashboard mit Echtzeit-Updates</p>
+            </div>
+        </div>
+
+        <!-- Scene 4: Final CTA -->
+        <div class="intro-scene" data-scene="4">
+            <div class="scene-content">
+                <h2 class="final-heading">Bereit zu starten?</h2>
+                <p class="final-text">Steigere deine Produktivität ab sofort</p>
+                <button class="cta-button" onclick="finishIntro()">
+                    <span>Los geht's</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skip Button -->
+    <button class="skip-button" onclick="finishIntro()" aria-label="Skip intro">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </button>
+
+    <!-- Progress Indicator -->
+    <div class="progress-dots">
+        <span class="dot active" data-scene="1"></span>
+        <span class="dot" data-scene="2"></span>
+        <span class="dot" data-scene="3"></span>
+        <span class="dot" data-scene="4"></span>
+    </div>
+
+    <style>
+        #pro-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99999;
+            background: #0a0a0f;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+        }
+
+        #gradient-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
+        }
+
+        .intro-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .intro-scene {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .intro-scene.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .scene-content {
+            text-align: center;
+            max-width: 1000px;
+            padding: 2rem;
+        }
+
+        /* Logo Reveal */
+        .logo-reveal {
+            margin-bottom: 3rem;
+        }
+
+        .logo-reveal svg {
+            filter: drop-shadow(0 10px 30px rgba(168, 85, 247, 0.3));
+        }
+
+        .logo-ring {
+            animation: ringPulse 3s ease-in-out infinite;
+        }
+
+        .logo-circle {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            animation: drawCircle 1.5s ease-out forwards;
+        }
+
+        .logo-check {
+            stroke-dasharray: 80;
+            stroke-dashoffset: 80;
+            animation: drawCheck 0.6s ease-out 1.2s forwards;
+        }
+
+        @keyframes ringPulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+        }
+
+        @keyframes drawCircle {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes drawCheck {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .brand-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 1rem 0;
+            letter-spacing: -0.03em;
+            opacity: 0;
+            animation: fadeSlideUp 0.8s ease-out 0.5s forwards;
+        }
+
+        .brand-subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+            margin: 0;
+            opacity: 0;
+            animation: fadeSlideUp 0.8s ease-out 0.8s forwards;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: featureAppear 0.6s ease-out forwards;
+            animation-delay: var(--delay);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-4px);
+        }
+
+        @keyframes featureAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(236, 72, 153, 0.1));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a855f7;
+        }
+
+        .feature-item h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0 0 0.75rem 0;
+        }
+
+        .feature-item p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Visual Showcase */
+        .visual-showcase {
+            margin-bottom: 3rem;
+        }
+
+        .mock-dashboard {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            max-width: 500px;
+            margin: 0 auto;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            animation: dashboardReveal 1s ease-out forwards;
+        }
+
+        @keyframes dashboardReveal {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .dashboard-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dash-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dash-dot:nth-child(1) { background: #ef4444; }
+        .dash-dot:nth-child(2) { background: #fbbf24; }
+        .dash-dot:nth-child(3) { background: #10b981; }
+
+        .dashboard-body {
+            padding: 2rem 1.5rem;
+        }
+
+        .dash-stat {
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-bar::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: var(--width);
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+            border-radius: 4px;
+            animation: barFill 1.5s ease-out forwards;
+        }
+
+        @keyframes barFill {
+            from { width: 0; }
+        }
+
+        .showcase-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 1rem 0;
+            letter-spacing: -0.02em;
+        }
+
+        .showcase-subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+        }
+
+        /* Final CTA */
+        .final-heading {
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 1rem 0;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.6));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-text {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0 0 3rem 0;
+        }
+
+        .cta-button {
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.4);
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+        }
+
+        .cta-button svg {
+            transition: transform 0.3s ease;
+        }
+
+        .cta-button:hover svg {
+            transform: translateX(4px);
+        }
+
+        /* Skip Button */
+        .skip-button {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .skip-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(168, 85, 247, 0.5);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        /* Progress Dots */
+        .progress-dots {
+            position: fixed;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.75rem;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .dot:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Fade Out Animation */
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .feature-item {
+                padding: 2rem 1.5rem;
+            }
+
+            .skip-button {
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .progress-dots {
+                bottom: 2rem;
+            }
+        }
+    </style>
+
+    <script>
+        (function() {
+            // Check if intro has been seen
+            if (localStorage.getItem('pro_intro_seen') === 'true') {
+                return;
+            }
+
+            const intro = document.getElementById('pro-intro');
+            intro.style.display = 'block';
+
+            // Animated gradient background
+            const canvas = document.getElementById('gradient-canvas');
+            const ctx = canvas.getContext('2d');
+            let time = 0;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            function drawGradient() {
+                const gradient = ctx.createRadialGradient(
+                    canvas.width * 0.5 + Math.sin(time * 0.001) * 200,
+                    canvas.height * 0.5 + Math.cos(time * 0.001) * 200,
+                    0,
+                    canvas.width * 0.5,
+                    canvas.height * 0.5,
+                    Math.max(canvas.width, canvas.height) * 0.8
+                );
+
+                gradient.addColorStop(0, `rgba(168, 85, 247, ${0.15 + Math.sin(time * 0.002) * 0.05})`);
+                gradient.addColorStop(0.5, `rgba(236, 72, 153, ${0.1 + Math.cos(time * 0.003) * 0.05})`);
+                gradient.addColorStop(1, 'rgba(10, 10, 15, 0)');
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                time++;
+                requestAnimationFrame(drawGradient);
+            }
+
+            drawGradient();
+
+            // Scene management
+            const scenes = document.querySelectorAll('.intro-scene');
+            const dots = document.querySelectorAll('.dot');
+            let currentScene = 0;
+
+            const sceneDurations = [3000, 4500, 4000, 0]; // Last scene stays until user clicks
+
+            function showScene(index) {
+                scenes.forEach((scene, i) => {
+                    scene.classList.toggle('active', i === index);
+                });
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+
+            function nextScene() {
+                if (currentScene < scenes.length - 1) {
+                    currentScene++;
+                    showScene(currentScene);
+
+                    if (sceneDurations[currentScene] > 0) {
+                        setTimeout(nextScene, sceneDurations[currentScene]);
+                    }
+                }
+            }
+
+            // Start timeline
+            setTimeout(nextScene, sceneDurations[0]);
+
+            // Dot navigation
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentScene = index;
+                    showScene(currentScene);
+                });
+            });
+
+            // Finish intro
+            window.finishIntro = function() {
+                localStorage.setItem('pro_intro_seen', 'true');
+                intro.style.animation = 'fadeOut 0.6s ease forwards';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                }, 600);
+            };
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (intro.style.display === 'none') return;
+
+                if (e.key === 'Escape' || e.key === 'Enter') {
+                    finishIntro();
+                } else if (e.key === 'ArrowRight' && currentScene < scenes.length - 1) {
+                    currentScene++;
+                    showScene(currentScene);
+                } else if (e.key === 'ArrowLeft' && currentScene > 0) {
+                    currentScene--;
+                    showScene(currentScene);
+                }
+            });
+        })();
+    </script>
+</div>
+
+<!-- MOBILE DISCLAIMER BANNER -->
+<div id="mobileDisclaimerBanner" style="position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 16px 20px; z-index: 1000; text-align: center; box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3); display: none;">
         <div style="max-width: 100%; margin: 0 auto;">
             <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
                 <span style="font-size: 1.3rem;">⚠️</span>
