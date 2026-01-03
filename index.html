@@ -19040,7 +19040,6 @@ function exportConversationPDF() {
         doc.text(`Seite ${i} von ${pageCount}`, 105, 285, { align: 'center' });
     }
     
-    // Download
     doc.save(`AI-Bot-Conversation-${new Date().getTime()}.pdf`);
     
     showCustomMessage('✅ Exportiert', 'Conversation als PDF heruntergeladen!', 'success');
@@ -19051,7 +19050,12 @@ function clearConversation() {
         () => {
             aiBotConversation = [];
             document.getElementById('aiBotChat').innerHTML = '';
-            showCustomMessage('✅ Gelöscht', 'Chat wurde erfolgreich geleert!', 'success');
+            
+            if (window.webLLMIntegration && typeof window.webLLMIntegration.clearConversation === 'function') {
+                window.webLLMIntegration.clearConversation();
+            }
+            
+            showCustomMessage('✅ Gelöscht', 'Chat wurde erfolgreich geleert! (Lokale AI-Bot & WebLLM Konversation)', 'success');
         }
     );
 }

@@ -474,6 +474,20 @@ class WebLLMIntegration {
     }
 
     /**
+     * Löscht die Konversationshistorie (NOT der Cache)
+     * Wird aufgerufen wenn User den Chat cleared
+     */
+    clearConversation() {
+        try {
+            this.conversationHistory = [];
+            this.saveState();
+            console.log('[WebLLM] Konversationsverlauf gelöscht');
+        } catch (error) {
+            console.error('[WebLLM] Fehler beim Löschen der Konversation:', error);
+        }
+    }
+
+    /**
      * Löscht den Cache
      */
     async clearCache() {
